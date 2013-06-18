@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<extension key="net.ourpowerbase.reports.advancedfundraising" type="module">
+  <file>advancedfundraising</file>
+  <name>Advanced Fundraising Reports for PTP</name>
+  <description>Reports to help fundraisers view their progress sponsored by PTP</description>
+  <urls>
+    <url desc="specifications">http://wiki.civicrm.org/confluence/display/CRM/CiviEngage+Enhancements+for+fund-raising</url>
+  </urls>
+  <license>agpl</license>
+  <maintainer>
+    <author>Eileen McNaughton</author>
+    <email>eileen@fuzion.co.nz</email>
+  </maintainer>
+  <releaseDate>2013-06-17</releaseDate>
+  <version>1.0</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.2</ver>
+    <ver>4.3</ver>
+    <ver>4.4</ver>
+  </compatibility>
+  <comments>This module depends on you first installing the base reports class. You need to do this yourself - there is no automated process yet</comments>
+  <civix>
+    <namespace>CRM/AdvancedFundraising</namespace>
+  </civix>
+</extension>
