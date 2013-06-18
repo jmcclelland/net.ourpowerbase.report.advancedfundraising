@@ -64,7 +64,7 @@
  *
  *   4) comparison is 'none - there is no comparison range (e.g. for 'first')
  */
-class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates extends CRM_ReportBase_Form_Report_ReportBase {
+class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates extends CRM_Reportbase_Form_Report_ReportBase {
   CONST OP_SINGLEDATE = 3;
   protected $_add2groupSupported = FALSE;
   protected $_ranges = array();
@@ -157,7 +157,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     $graphData['legend'] = ts($this->_barChartLegend);
 
     $graphData = array_merge($graphData, $this->_graphData);
-    CRM_ReportBase_Form_Report_OpenFlashChart::buildChart($graphData, $this->_params['charts']);
+    CRM_Reportbase_Form_Report_OpenFlashChart::buildChart($graphData, $this->_params['charts']);
     $this->assign('chartType', $this->_params['charts']);
   }
 
