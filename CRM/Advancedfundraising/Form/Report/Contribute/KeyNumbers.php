@@ -212,8 +212,11 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    */
   function beginPostProcess() {
     parent::beginPostProcess();
-    $this->_kpiDescriptors = array_intersect_key($this->_kpiDescriptors, array_flip($this->_params['report_options_value']));
-    if(!empty($this->_params['receive_date_relative'])){
+    if(!empty($this->_params['report_options_value'])) {
+      //if none are set we will display all
+      $this->_kpiDescriptors = array_intersect_key($this->_kpiDescriptors, array_flip($this->_params['report_options_value']));
+    }
+    if(!empty($this->_params['receive_date_relative'])) {
       //render out relative dates here
       $rels = explode('.', $this->_params['receive_date_relative']);
       $fromTo = (CRM_Utils_Date::relativeToAbsolute($rels[0], $rels[1]));
