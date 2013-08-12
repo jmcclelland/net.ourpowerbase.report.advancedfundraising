@@ -85,6 +85,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     'recovered' => 'Recovered',
     'new' => 'New',
     'first' => 'First',
+    'increased' => 'Donors who have increased their giving',
+    'reduced' => 'Donors who have reduced their giving',
+    'every' => 'All donors',
     );
   /**
    *

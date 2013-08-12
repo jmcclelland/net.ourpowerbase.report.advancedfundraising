@@ -76,15 +76,17 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregateDetails extends CR
               'new' => ts('New Donor (since comparison period'),
               'lapsed' => ts('Lapsed Donors from Comparison Period'),
               'prior' => ts('All Lapsed Donors'),
-              'recovered' => ts('Recovered Donors')),
+              'recovered' => ts('Recovered Donors'),
               'first' => ts('First Time Donor'),
-              'increased' => ts('donor with increased giving'),
-              'decreased' => ts('donor with decreased giving'),
+              'increased' => ts('Donors with increased giving'),
+              'decreased' => ts('Donor with decreased giving'),
+              'every' => ts('All donors in main period'),
+            ),
           ),
-
         )
       ),
     );
+
     $this->_columns =  array_merge_recursive($this->reportFilters, $this->getContributionColumns(array(
         'fields' => FALSE,
         'order_by' => FALSE,
@@ -98,6 +100,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregateDetails extends CR
     $this->_aliases['civicrm_contact']  = 'civicrm_report_contact';
     $this->_tagFilter = TRUE;
     $this->_groupFilter = TRUE;
+
     parent::__construct();
   }
 
