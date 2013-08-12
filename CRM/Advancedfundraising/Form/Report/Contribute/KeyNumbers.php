@@ -125,6 +125,18 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         'contact_type_title' => ts('%1 Sustaining  Members'),
         'link_status' => NULL,
       ),
+      'highest_donation' => array(
+        'type' => CRM_Utils_Type::T_MONEY,
+        'title' => ts('Largest Donation'),
+        'contact_type_title' => ts('Largest Donation From %1s'),
+        'link_status' => 'every',
+      ),
+      'lowest_donation' => array(
+        'type' => CRM_Utils_Type::T_MONEY,
+        'title' => ts('Smallest Donation'),
+        'contact_type_title' => ts('Smallest Donation From %1s'),
+        'link_status' => 'every',
+      ),
     );
     $extraDefault = NULL;
     $this->setFinancialType();
@@ -277,6 +289,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     if($this->financialTypeField == 'financial_type_id'){
       $this->calcNewContactCount();
     }
+    $this->calcContactTypeDonationMaxMin();
     $this->_from = " FROM $tempTable";
     $this->stashValuesInTable($tempTable);
   }
@@ -425,6 +438,38 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     }
     $this->calcAverageValues();
   }
+
+  /**
+   * Calculate largest & smallest donations
+   */
+  function calcContactTypeDonationMaxMin(){
+    $sql = "
+    SELECT
+    contact_type,
+    COALESCE(max(interval_0_amount),0) as this_year_max,
+    COALESCE(max(interval_1_amount),0) as last_year_max,
+    COALESCE(min(interval_0_amount),0) as this_year_min,
+    COALESCE(min(interval_1_amount),0) as last_year_min
+    FROM {$this->_tempTables['civicrm_contribution_multi']} cont
+      INNER JOIN civicrm_contact c ON c.id = cont.cid
+      GROUP BY contact_type
+      WITH ROLLUP
+    ";
+    $result = CRM_Core_DAO::executeQuery($sql);
+
+    while($result->fetch()){
+      $this->_kpis[$this->_currentYear]['highest_donation__' . strtolower($result->contact_type)] = $result->this_year_max;
+      $this->_kpis[$this->_lastYear]['highest_donation__' . strtolower($result->contact_type)] = $result->last_year_max;
+      $this->_kpis[$this->_currentYear]['lowest_donation__' . strtolower($result->contact_type)] = $result->this_year_min;
+      $this->_kpis[$this->_lastYear]['lowest_donation__' . strtolower($result->contact_type)] = $result->last_year_min;
+
+    }
+    $this->_kpis[$this->_currentYear]['highest_donation'] = $this->_kpis[$this->_currentYear]['highest_donation__'];
+    $this->_kpis[$this->_lastYear]['highest_donation'] = $this->_kpis[$this->_lastYear]['highest_donation__'];
+    $this->_kpis[$this->_currentYear]['lowest_donation'] = $this->_kpis[$this->_currentYear]['lowest_donation__'];
+    $this->_kpis[$this->_lastYear]['lowest_donation'] = $this->_kpis[$this->_lastYear]['lowest_donation__'];
+  }
+
 /**
  * Calculate averges per contact type
  *
@@ -475,12 +520,12 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       INNER JOIN civicrm_contact c ON c.id = cont.cid
       GROUP BY contact_type
     ";
-        $result = CRM_Core_DAO::executeQuery($sql);
-        while($result->fetch()){
-        $this->_kpis[$this->_currentYear]['no_increased_donations__' . strtolower($result->contact_type)] = $result->this_year;
-        $this->_kpis[$this->_lastYear]['no_increased_donations__' . strtolower($result->contact_type)] = $result->last_year;
-      }
+    $result = CRM_Core_DAO::executeQuery($sql);
+    while($result->fetch()){
+      $this->_kpis[$this->_currentYear]['no_increased_donations__' . strtolower($result->contact_type)] = $result->this_year;
+      $this->_kpis[$this->_lastYear]['no_increased_donations__' . strtolower($result->contact_type)] = $result->last_year;
     }
+  }
 
     /**
      * Add data about number of pledges
