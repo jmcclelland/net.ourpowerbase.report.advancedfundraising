@@ -97,7 +97,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregateDetails extends CR
     $this->_columns['civicrm_contact']['fields']['display_name']['default']  = TRUE;
     $this->_columns['civicrm_contact']['fields']['id']['default']  = TRUE;
     $this->_columns['civicrm_contribution']['filters']['receive_date']['pseudofield'] = TRUE;
-    $this->_columns['civicrm_contribution']['filters']['contribution_status_id']['default'] = 1;
+    $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['default']
+    = array(array_search('Completed', $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['options']));
+
     $this->_aliases['civicrm_contact']  = 'civicrm_report_contact';
     $this->_tagFilter = TRUE;
     $this->_groupFilter = TRUE;

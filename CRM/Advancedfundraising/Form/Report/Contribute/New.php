@@ -94,6 +94,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_New extends CRM_Advancedfun
     $this->_columns['civicrm_contribution']['filters'] ['receive_date']['default'] = date('m/d/Y',strtotime($this->getLastDayOfQuarter()));
     $this->_columns['civicrm_contribution']['filters'] ['receive_date']['pseudofield'] = TRUE;
     $this->_aliases['civicrm_contact']  = 'civicrm_report_contact';
+    $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['default']
+    = array(array_search('Completed', $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['options']));
+
     $this->_tagFilter = TRUE;
     $this->_groupFilter = TRUE;
 

@@ -86,6 +86,8 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Recovery extends CRM_Advanc
         'fields' => FALSE,
         'order_by' => FALSE,
       )))  ;
+    $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['default']
+      = array(array_search('Completed', $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['options']));
 
     $this->_columns['civicrm_contribution']['filters'] ['receive_date']['operatorType'] = parent::OP_SINGLEDATE;
     $this->_columns['civicrm_contribution']['filters'] ['receive_date']['title'] = 'Cut-off date';
