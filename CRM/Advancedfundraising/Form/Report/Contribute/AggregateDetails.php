@@ -97,10 +97,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregateDetails extends CR
     $this->_columns['civicrm_contact']['fields']['display_name']['default']  = TRUE;
     $this->_columns['civicrm_contact']['fields']['id']['default']  = TRUE;
     $this->_columns['civicrm_contribution']['filters']['receive_date']['pseudofield'] = TRUE;
+    $this->_columns['civicrm_contribution']['filters']['contribution_status_id']['default'] = 1;
     $this->_aliases['civicrm_contact']  = 'civicrm_report_contact';
     $this->_tagFilter = TRUE;
     $this->_groupFilter = TRUE;
-
     parent::__construct();
   }
 
@@ -185,10 +185,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregateDetails extends CR
       $this->_ranges['interval_0'][$prefix . 'from_date'] = DATE('Y-m-d', strtotime($from));
       $this->_ranges['interval_0'][$prefix . 'to_date'] = DATE('Y-m-d', strtotime($to));
       if(strtotime($from) < strtotime($earliestDate)){
-        $earliestDate = date('Y-m-d',strtotime($from));
+        $earliestDate = date('m/d/Y',strtotime($from));
       }
       if(strtotime($to) > strtotime($latestDate)){
-        $latestDate = date('Y-m-d', strtotime($to));
+        $latestDate = date('m/d/Y', strtotime($to));
       }
 
     }
@@ -197,6 +197,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregateDetails extends CR
     // & smallest dates we are interested in
     $this->_params['report_date_from'] = $earliestDate;
     $this->_params['report_date_to'] = $latestDate;
+    $this->_params['report_date_relative'] = '0';
     $this->_columns['civicrm_contribution']['filters']['report_date'] = $this->_columns['civicrm_contribution']['filters']['receive_date'];
     $this->_columns['civicrm_contribution']['filters']['report_date']['title'] = 'Report Date Range';
     $this->_columns['civicrm_contribution']['filters']['report_date']['pseudofield'] = FALSE;
