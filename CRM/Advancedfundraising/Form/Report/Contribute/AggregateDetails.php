@@ -167,11 +167,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregateDetails extends CR
     $this->assign('chartSupported', TRUE);
   }
 
-  function statistics(&$rows) {
-    $statistics = parent::statistics($rows);
-    return $statistics;
-  }
-
   function beginPostProcess() {
     parent::beginPostProcess();
     $this->_ranges = array(

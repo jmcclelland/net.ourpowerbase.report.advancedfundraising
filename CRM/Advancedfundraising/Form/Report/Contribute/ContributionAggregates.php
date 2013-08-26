@@ -557,6 +557,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
   *        'comparison_to_date' => '2010-06-01',),
   */
   function constructComparisonTable() {
+    $tempTable = 'civicrm_report_temp_conts' . date('d_H_I') . substr(md5(serialize($this->_ranges) . serialize($this->whereClauses)), 0, 6);
+    if($this->tableExists($tempTable)) {
+      return $tempTable;
+    }
     $columnStr = '';
     $betweenClauses = array();
     foreach ($this->_ranges as $alias => &$specs) {
@@ -573,15 +577,14 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
         $betweenClauses[] = " {$specs['comparison_between']}";
       }
       $betweenClauses[] = " {$specs['between']}";
-      $columnStr .= "  {$alias}_amount FLOAT NOT NULL default 0, {$alias}_no FLOAT NOT NULL default 0, ";
-      $columnStr .= "  {$alias}_catch_amount FLOAT NOT NULL default 0, {$alias}_catch_no FLOAT NOT NULL default 0, ";
+      $columnStr .= "  {$alias}_amount DECIMAL NOT NULL default 0, {$alias}_no DECIMAL NOT NULL default 0, ";
+      $columnStr .= "  {$alias}_catch_amount DECIMAL NOT NULL default 0, {$alias}_catch_no DECIMAL NOT NULL default 0, ";
       foreach ($this->_statuses as $status) {
         $columnStr .= "  {$alias}_{$status} TINYINT NOT NULL default 0, ";
       }
     }
 
     $temporary = $this->_temporary;
-    $tempTable = 'civicrm_report_temp_conts' . date('d_H_I') . rand(1, 10000);
 
     CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS $tempTable");
     $createTablesql = "
@@ -678,6 +681,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
  * @return string
  */
   function createSummaryTable($tempTable) {
+    $tempTableSummary = $tempTable . '_summary';
+    if($this->tableExists($tempTableSummary)) {
+      return $tempTableSummary;
+    }
     foreach ($this->_ranges as $rangeName => &$rangeSpecs) {
       // could do this above but will probably want this creation in a separate function
       $sql = "
@@ -702,7 +709,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       $summarySQL[] = $sql . " FROM {$tempTable}";
     }
 
-    $newTableSQL = " CREATE table {$tempTable}_summary" . implode(' UNION ', $summarySQL);
+    $newTableSQL = " CREATE table $tempTableSummary " . implode(' UNION ', $summarySQL);
     CRM_Core_DAO::executeQuery($newTableSQL);
   }
   /**
@@ -895,6 +902,68 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       case 11:
         return (date('Y-09-30'));
     }
+  }
+
+
+  function statistics(&$rows) {
+    $statistics = parent::statistics($rows);
+    $tempTable = $this->constructComparisonTable();
+
+    foreach ($this->_ranges as $index => $range) {
+      $select = ' SELECT ';
+      $select .= "
+        sum({$index}_amount) as {$index}_amount,
+        sum({$index}_no) as {$index}_no,
+        ROUND(avg({$index}_amount), 2) as {$index}_avg,
+        max({$index}_amount) as {$index}_max,
+        min({$index}_amount) as {$index}_min
+      ";
+
+    $sql = $select . " FROM " . $tempTable . " WHERE {$index}_amount > 0 ";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+
+    while ($dao->fetch()) {
+        $amountStr = $index . '_amount';
+        $noStr = $index . '_no';
+        $avgStr = $index . '_avg';
+        $maxStr = $index . '_max';
+        $minStr = $index . '_min';
+        $rangeStr = '(' . CRM_Utils_Date::customFormat($this->_ranges[$index]['from_date']) . ts(' to ') .  CRM_Utils_Date::customFormat($this->_ranges[$index]['to_date']) . ')';
+        $statistics['counts']['amount'. $index] = array(
+          'title' => ts('Total Amount Contributed ' . $rangeStr),
+          'value' => $dao->$amountStr,
+          'type' => CRM_Utils_Type::T_MONEY,
+        );
+        $statistics['counts']['count'. $index] = array(
+          'title' => ts('Total Number of Contributions'),
+          'value' => $dao->$noStr,
+        );
+        $statistics['counts']['avg' . $index] = array(
+          'title' => ts('Average Value of Contribution'),
+          'value' =>  $dao->$avgStr,
+          'type' => CRM_Utils_Type::T_MONEY,
+        );
+        $statistics['counts']['max' . $index] = array(
+          'title' => ts('Largest Contribution'),
+          'value' =>  $dao->$maxStr,
+          'type' => CRM_Utils_Type::T_MONEY,
+        );
+        $statistics['counts']['min' . $index] = array(
+          'title' => ts('Smallest Contribution'),
+          'value' =>  $dao->$minStr,
+          'type' => CRM_Utils_Type::T_MONEY,
+        );
+      }
+
+    }
+    if(count($this->_ranges == 1 )) {
+      $statistics['counts']['rowsFound']['title']  = ts('Total Rows (number of contributors');
+    }
+    else{
+      unset($statistics['counts']['rowsFound']);
+    }
+    return $statistics;
+
   }
 }
 
