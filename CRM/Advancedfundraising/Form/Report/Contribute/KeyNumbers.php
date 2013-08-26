@@ -277,7 +277,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     parent::filterStat($statistics);
   }
   /**
-   * Call the functions that compose our KPI results
+   * Call the functions that compose our KPI results. Note that we could be more
+   * selective in calling these. So far performance has seemed OK so that has not been
+   * a priority
    */
   function compileKeyStats(){
     $tempTable = $this->generateSummaryTable();
@@ -368,36 +370,37 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     return $tempTable;
   }
 
+  /**
+   * Retrieve kpis stored in in summary table
+   * @param unknown_type $fieldname
+   * @param unknown_type $kpi
+   */
+  function setKPIsFromSummary($fieldname, $kpi) {
+    $sql = "
+      SELECT group_concat({$fieldname}) as val
+      {$this->_from}
+    ;
+    ";
+    $result = CRM_Core_DAO::executeQuery($sql);
+    while($result->fetch()){
+      $values = explode(',', $result->val);
+      $this->_kpis[$this->_currentYear][$kpi] = $values[0];
+      $this->_kpis[$this->_lastYear][$kpi] = $values[1];
+    }
+  }
+
  /**
   * Add data about number of donors
   */
   function calcDonorNumber(){
-    $sql = "
-      SELECT every, to_date
-      {$this->_from}
-      ;
-    ";
-    $result = CRM_Core_DAO::executeQuery($sql);
-    while($result->fetch()){
-      $year = date('Y', strtotime($result->to_date));
-      $this->_kpis[$year]['donor_number'] = $result->every;
-    }
+    $this->setKPIsFromSummary('every', 'donor_number');
   }
 
   /**
    * Add data about number of donors
    */
   function calcDonationTotal(){
-      $sql = "
-      SELECT every_total, to_date
-      {$this->_from}
-      ;
-    ";
-    $result = CRM_Core_DAO::executeQuery($sql);
-    while($result->fetch()){
-      $year = date('Y', strtotime($result->to_date));
-      $this->_kpis[$year]['total_amount'] = $result->every_total;
-    }
+    $this->setKPIsFromSummary('every_total', 'total_amount');
   }
 
   /**
@@ -498,16 +501,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    * Add data about number of donors
    */
   function calcIncreasedGivers(){
-    $sql = "
-    SELECT increased, to_date
-    {$this->_from}
-    ;
-    ";
-    $result = CRM_Core_DAO::executeQuery($sql);
-    while($result->fetch()){
-      $year = date('Y', strtotime($result->to_date));
-      $this->_kpis[$year]['no_increased_donations'] = $result->increased;
-    }
+    $this->setKPIsFromSummary('increased', 'no_increased_donations');
   }
 
 
