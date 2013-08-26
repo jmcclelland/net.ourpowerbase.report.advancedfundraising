@@ -908,7 +908,13 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
   function statistics(&$rows) {
     $statistics = parent::statistics($rows);
     $tempTable = $this->constructComparisonTable();
-
+    // this 'isMultipleRanges stuff is poor man's formatting - to avoid altering the tpl in this
+    // extension @ this stage.
+    $spacing = $isMultipleRanges = '';
+    if(count($this->_ranges) > 1) {
+      $spacing = '&nbsp &nbsp  &nbsp  &nbsp  &nbsp  &nbsp ';
+      $isMultipleRanges = TRUE;
+    }
     foreach ($this->_ranges as $index => $range) {
       $select = ' SELECT ';
       $select .= "
@@ -928,39 +934,48 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
         $avgStr = $index . '_avg';
         $maxStr = $index . '_max';
         $minStr = $index . '_min';
-        $rangeStr = '(' . CRM_Utils_Date::customFormat($this->_ranges[$index]['from_date']) . ts(' to ') .  CRM_Utils_Date::customFormat($this->_ranges[$index]['to_date']) . ')';
+        $rangeStr = CRM_Utils_Date::customFormat($this->_ranges[$index]['from_date']) . ts(' to ') .  CRM_Utils_Date::customFormat($this->_ranges[$index]['to_date']);
+
+        if($isMultipleRanges) {
+          $statistics['counts']['header'. $index] = array(
+            'title' => $rangeStr,
+            'value' => '',
+            'type' => CRM_Utils_Type::T_MONEY,
+          );
+        }
         $statistics['counts']['amount'. $index] = array(
-          'title' => ts('Total Amount Contributed ' . $rangeStr),
+          'title' => $spacing . ts('Total Amount Contributed '),
           'value' => $dao->$amountStr,
           'type' => CRM_Utils_Type::T_MONEY,
         );
         $statistics['counts']['count'. $index] = array(
-          'title' => ts('Total Number of Contributions'),
+          'title' => $spacing . ts('Total Number of Contributions'),
           'value' => $dao->$noStr,
         );
         $statistics['counts']['avg' . $index] = array(
-          'title' => ts('Average Value of Contribution'),
-          'value' =>  $dao->$avgStr,
+          'title' => $spacing . ts('Average Value of Contribution'),
+          'value' => $dao->$avgStr,
           'type' => CRM_Utils_Type::T_MONEY,
         );
         $statistics['counts']['max' . $index] = array(
-          'title' => ts('Largest Contribution'),
+          'title' => $spacing . ts('Largest Contribution'),
           'value' =>  $dao->$maxStr,
           'type' => CRM_Utils_Type::T_MONEY,
         );
         $statistics['counts']['min' . $index] = array(
-          'title' => ts('Smallest Contribution'),
+          'title' => $spacing . ts('Smallest Contribution'),
           'value' =>  $dao->$minStr,
           'type' => CRM_Utils_Type::T_MONEY,
         );
       }
 
     }
-    if(count($this->_ranges == 1 )) {
-      $statistics['counts']['rowsFound']['title']  = ts('Total Rows (number of contributors');
+
+    if($isMultipleRanges) {
+      unset($statistics['counts']['rowsFound']);
     }
     else{
-      unset($statistics['counts']['rowsFound']);
+      $statistics['counts']['rowsFound']['title']  = ts('Total Rows (number of contributors)');
     }
     return $statistics;
 
