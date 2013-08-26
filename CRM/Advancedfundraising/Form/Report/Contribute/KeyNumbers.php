@@ -724,7 +724,12 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         $queryURL .= "&{$criterion}=" . $criterionValue;
       }
       if(!empty($kpiDetails[1])){
-        $queryURL .= "&contact_type_value=" . $kpiDetails[1];
+        // we are going to do some extra handling in case of unexpected case for contact type
+        $contactTypes = $this->getContactTypeOptions();
+        $contactTypes = array_keys($contactTypes);
+        $lcKey = array_search(strtolower($kpiDetails[1]), array_map('strtolower', $contactTypes));
+        $contactType = $contactTypes[$lcKey];
+        $queryURL .= "&contact_type_value=" . $contactType . "&contact_type_op=in";
       }
       $years = array(
         0 => 'this_year',
