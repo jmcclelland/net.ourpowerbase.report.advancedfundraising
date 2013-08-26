@@ -751,6 +751,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     parent::alterDisplay($rows);
   }
 
+    function statistics(&$rows) {
+      return array();
+    }
 
 }
 
