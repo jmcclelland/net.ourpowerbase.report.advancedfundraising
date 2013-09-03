@@ -312,7 +312,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     else{
       return array(
         'contribution_from_contact',
-        'entitytag_from_contact',
       );
     }
   }

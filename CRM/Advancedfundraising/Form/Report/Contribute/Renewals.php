@@ -116,7 +116,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Renewals extends CRM_Advanc
     else{
       return array(
         'contribution_from_contact',
-        'entitytag_from_contact',
       ) + $this->constrainedFromClause();
     }
   }

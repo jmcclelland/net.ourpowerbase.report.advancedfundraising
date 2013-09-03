@@ -115,7 +115,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Recovery extends CRM_Advanc
     else{
       return array(
         'contribution_from_contact',
-        'entitytag_from_contact',
       ) + $this->constrainedFromClause();
     }
   }

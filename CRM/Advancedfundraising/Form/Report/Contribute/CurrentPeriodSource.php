@@ -111,7 +111,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_CurrentPeriodSource extends
     else{
       return array(
         'contribution_from_contact',
-        'entitytag_from_contact',
       ) + $this->constrainedFromClause();
     }
   }
