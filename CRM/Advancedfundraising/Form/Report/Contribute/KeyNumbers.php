@@ -282,6 +282,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    * a priority
    */
   function compileKeyStats(){
+    $this->generateContributionWhereClause();
     $tempTable = $this->generateSummaryTable();
     $this->calcDonorNumber();
     $this->calcDonationTotal();
@@ -298,6 +299,16 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     $this->calcContactTypeDonationMaxMin();
     $this->_from = " FROM $tempTable";
     $this->stashValuesInTable($tempTable);
+  }
+
+  /**
+   * create a clause of contribution criteria to add to pledge & recurring queries
+   */
+  function generateContributionWhereClause() {
+   $this->where();
+   if(CRM_Utils_Array::value('civicrm_contribution', $this->whereClauses)) {
+     $this->_contributionWhere = ' AND ' . implode (' AND ', $this->whereClauses['civicrm_contribution']);
+   }
   }
 
   /**
@@ -527,6 +538,11 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
      * Add data about number of pledges
      */
     function calcContactTypeCurrentPledges(){
+     $contributionFrom = '';
+     if($this->_contributionWhere) {
+       $contributionFrom = " LEFT JOIN civicrm_pledge_payment pp ON pp.pledge_id = pledge.id
+         LEFT JOIN civicrm_contribution {$this->_aliases['civicrm_contribution']} ON {$this->_aliases['civicrm_contribution']}.id = pp.contribution_id ";
+     }
       foreach($this->_years as $interval => $year){
         $sql = "
         SELECT
@@ -540,11 +556,13 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         INNER JOIN
           ( SELECT DISTINCT pledge.contact_id
             FROM civicrm_pledge pledge
+            $contributionFrom
             WHERE
-              pledge.start_date < '" . $this->_ranges['interval_' . $interval]['to_date'] . " 23-59-59'
+              (pledge.start_date < '" . $this->_ranges['interval_' . $interval]['to_date'] . " 23-59-59'
             AND (pledge.end_date >= '" . $this->_ranges['interval_' . $interval]['from_date'] . " 00-00-00')
             AND (pledge.cancel_date > '" . $this->_ranges['interval_' . $interval]['from_date'] . " 00-00-00'
-              OR pledge.cancel_date IS NULL)
+              OR pledge.cancel_date IS NULL))
+              $this->_contributionWhere
            ) as p ON p.contact_id = c.id
         GROUP BY contact_type
         WITH ROLLUP
@@ -568,6 +586,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    *  2) didn't end or get cancelled before the end date of the range
    */
   function calcContactTypeCurrentRecurs(){
+   $contributionFrom = '';
+   if($this->_contributionWhere) {
+    $contributionFrom = " LEFT JOIN  civicrm_contribution {$this->_aliases['civicrm_contribution']} ON {$this->_aliases['civicrm_contribution']}.contribution_recur_id = recur.id ";
+   }
     foreach($this->_years as $interval => $year){
       $sql = "
       SELECT
@@ -579,12 +601,13 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
           FROM {$this->_baseTable} {$this->_aliases[$this->_baseTable]}
           INNER JOIN civicrm_contact c ON c.id = {$this->_aliases[$this->_baseTable]}.id
           INNER JOIN (
-            SELECT DISTINCT contact_id FROM civicrm_contribution_recur recur
-            WHERE recur.start_date <= '" . $this->_ranges['interval_' . $interval]['to_date'] . " 23-59-59'
+            SELECT DISTINCT recur.contact_id FROM civicrm_contribution_recur recur
+            $contributionFrom
+            WHERE (recur.start_date <= '" . $this->_ranges['interval_' . $interval]['to_date'] . " 23-59-59'
             AND (recur.end_date >= '" . $this->_ranges['interval_' . $interval]['from_date'] . " 00-00-00'
               OR recur.end_date IS NULL)
             AND (recur.cancel_date < '" . $this->_ranges['interval_' . $interval]['from_date'] . " 00-00-00' OR
-              recur.cancel_date IS NULL)
+              recur.cancel_date IS NULL)) $this->_contributionWhere
             ) as r ON r.contact_id = c.id
         GROUP BY contact_type
         WITH ROLLUP
