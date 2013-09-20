@@ -460,30 +460,30 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    * Calculate largest & smallest donations
    */
   function calcContactTypeDonationMaxMin(){
-    $sql = "
-    SELECT
-    contact_type,
-    COALESCE(max(interval_0_amount),0) as this_year_max,
-    COALESCE(max(interval_1_amount),0) as last_year_max,
-    COALESCE(min(interval_0_amount),0) as this_year_min,
-    COALESCE(min(interval_1_amount),0) as last_year_min
-    FROM {$this->_tempTables['civicrm_contribution_multi']} cont
-      INNER JOIN civicrm_contact c ON c.id = cont.cid
+    $years = array(
+        0 => '_currentYear',
+        1 => '_lastYear',
+      );
+    foreach($years as $interval => $year){
+      $sql = "
+      SELECT
+        contact_type,
+        COALESCE(max(interval_{$interval}_amount),0) as max,
+        COALESCE(min(interval_{$interval}_amount),0) as min
+      FROM {$this->_tempTables['civicrm_contribution_multi']} cont
+        INNER JOIN civicrm_contact c ON c.id = cont.cid
+        WHERE interval_{$interval}_amount > 0
       GROUP BY contact_type
       WITH ROLLUP
     ";
     $result = CRM_Core_DAO::executeQuery($sql);
-
     while($result->fetch()){
-      $this->_kpis[$this->_currentYear]['highest_donation__' . strtolower($result->contact_type)] = $result->this_year_max;
-      $this->_kpis[$this->_lastYear]['highest_donation__' . strtolower($result->contact_type)] = $result->last_year_max;
-      $this->_kpis[$this->_currentYear]['lowest_donation__' . strtolower($result->contact_type)] = $result->this_year_min;
-      $this->_kpis[$this->_lastYear]['lowest_donation__' . strtolower($result->contact_type)] = $result->last_year_min;
+      $this->_kpis[$this->$year]['highest_donation__' . strtolower($result->contact_type)] = $result->max;
+      $this->_kpis[$this->$year]['lowest_donation__' . strtolower($result->contact_type)] = $result->min;
     }
-    $this->_kpis[$this->_currentYear]['highest_donation'] = CRM_Utils_Array::value('highest_donation__', $this->_kpis[$this->_currentYear], 0);
-    $this->_kpis[$this->_lastYear]['highest_donation'] = CRM_Utils_Array::value('highest_donation__', $this->_kpis[$this->_lastYear]);
-    $this->_kpis[$this->_currentYear]['lowest_donation'] = CRM_Utils_Array::value('lowest_donation__', $this->_kpis[$this->_currentYear]);
-    $this->_kpis[$this->_lastYear]['lowest_donation'] = CRM_Utils_Array::value('lowest_donation__', $this->_kpis[$this->_lastYear]);
+    $this->_kpis[$this->$year]['highest_donation'] = CRM_Utils_Array::value('highest_donation__', $this->_kpis[$this->$year], 0);
+    $this->_kpis[$this->$year]['lowest_donation'] = CRM_Utils_Array::value('lowest_donation__', $this->_kpis[$this->$year]);
+    }
   }
 
 /**
