@@ -542,9 +542,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
           ( SELECT DISTINCT pledge.contact_id
             FROM civicrm_pledge pledge
             WHERE
-              pledge.start_date < '" . $this->_ranges['interval_' . $interval]['to_date'] . "23-59-59'
-            AND (pledge.end_date >= '" . $this->_ranges['interval_' . $interval]['to_date'] . "23-59-59')
-            AND (pledge.cancel_date > '" . $this->_ranges['interval_' . $interval]['to_date'] . "23-59-59'
+              pledge.start_date < '" . $this->_ranges['interval_' . $interval]['to_date'] . " 23-59-59'
+            AND (pledge.end_date >= '" . $this->_ranges['interval_' . $interval]['from_date'] . " 00-00-00')
+            AND (pledge.cancel_date > '" . $this->_ranges['interval_' . $interval]['to_date'] . " 23-59-59'
               OR pledge.cancel_date IS NULL)
            ) as p ON p.contact_id = c.id
         GROUP BY contact_type
@@ -581,10 +581,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
           INNER JOIN civicrm_contact c ON c.id = {$this->_aliases[$this->_baseTable]}.id
           INNER JOIN (
             SELECT DISTINCT contact_id FROM civicrm_contribution_recur recur
-            WHERE recur.start_date <= '" . $this->_ranges['interval_' . $interval]['to_date'] . "23-59-59'
-            AND (recur.end_date >= '" . $this->_ranges['interval_' . $interval]['to_date'] . "23-59-59'
+            WHERE recur.start_date <= '" . $this->_ranges['interval_' . $interval]['to_date'] . " 23-59-59'
+            AND (recur.end_date >= '" . $this->_ranges['interval_' . $interval]['from_date'] . " 00-00-00'
               OR recur.end_date IS NULL)
-            AND (recur.cancel_date < '" . $this->_ranges['interval_' . $interval]['to_date'] . "23-59-59' OR
+            AND (recur.cancel_date < '" . $this->_ranges['interval_' . $interval]['to_date'] . " 23-59-59' OR
               recur.cancel_date IS NULL)
             ) as r ON r.contact_id = c.id
         GROUP BY contact_type
