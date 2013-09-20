@@ -383,8 +383,8 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     $result = CRM_Core_DAO::executeQuery($sql);
     while($result->fetch()){
       $values = explode(',', $result->val);
-      $this->_kpis[$this->_currentYear][$kpi] = $values[0];
-      $this->_kpis[$this->_lastYear][$kpi] = $values[1];
+      $this->_kpis[$this->_currentYear][$kpi] = CRM_Utils_Array::value(0, $values, 0);
+      $this->_kpis[$this->_lastYear][$kpi] = CRM_Utils_Array::value(1, $values, 0);
     }
   }
 
@@ -468,12 +468,11 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       $this->_kpis[$this->_lastYear]['highest_donation__' . strtolower($result->contact_type)] = $result->last_year_max;
       $this->_kpis[$this->_currentYear]['lowest_donation__' . strtolower($result->contact_type)] = $result->this_year_min;
       $this->_kpis[$this->_lastYear]['lowest_donation__' . strtolower($result->contact_type)] = $result->last_year_min;
-
     }
-    $this->_kpis[$this->_currentYear]['highest_donation'] = $this->_kpis[$this->_currentYear]['highest_donation__'];
-    $this->_kpis[$this->_lastYear]['highest_donation'] = $this->_kpis[$this->_lastYear]['highest_donation__'];
-    $this->_kpis[$this->_currentYear]['lowest_donation'] = $this->_kpis[$this->_currentYear]['lowest_donation__'];
-    $this->_kpis[$this->_lastYear]['lowest_donation'] = $this->_kpis[$this->_lastYear]['lowest_donation__'];
+    $this->_kpis[$this->_currentYear]['highest_donation'] = CRM_Utils_Array::value('highest_donation__', $this->_kpis[$this->_currentYear], 0);
+    $this->_kpis[$this->_lastYear]['highest_donation'] = CRM_Utils_Array::value('highest_donation__', $this->_kpis[$this->_lastYear]);
+    $this->_kpis[$this->_currentYear]['lowest_donation'] = CRM_Utils_Array::value('lowest_donation__', $this->_kpis[$this->_currentYear]);
+    $this->_kpis[$this->_lastYear]['lowest_donation'] = CRM_Utils_Array::value('lowest_donation__', $this->_kpis[$this->_lastYear]);
   }
 
 /**
