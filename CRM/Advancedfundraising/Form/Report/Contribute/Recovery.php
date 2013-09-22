@@ -51,7 +51,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Recovery extends CRM_Advanc
   function __construct() {
     $this->_statuses = array('recovered', 'prior');
 
-    $this->_barChartLegend = ts('Contributors previous to the Period behaviour in period');
+    $this->_barChartLegend = ts('Contributor Recovery Report');
     $this->reportFilters = array(
       'civicrm_contribution' => array(
         'filters' => array(
