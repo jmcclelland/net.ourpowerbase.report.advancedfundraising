@@ -158,6 +158,11 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     $graphData['xname'] = '';
     $graphData['yname'] = ts("Number of Donors");
     $graphData['legend'] = ts($this->_barChartLegend);
+    if(count($rows > 2)) {
+      // we need the labels for the tooltips but more than 2 bars & they look a mess
+      // so we are using the now-munted rotate fn to hide them
+      $graphData['hide_labels'] = TRUE;
+    }
 
     $graphData = array_merge($graphData, $this->_graphData);
     $chart = new CRM_Reportbase_Form_Report_OpenFlashChart();
@@ -181,7 +186,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
 
      $graphData['xname'] = 'x';
      $config = CRM_Core_Config::Singleton();
-     $graphData['yname'] = "Amount ({$config->defaultCurrency})";
+     $graphData['yname'] = "Renewals : ";
      $chartInfo = array('legend' => $this->_barChartLegend);
      $chartInfo['xname'] = ts('Base contribution period');
      $chartInfo['yname'] = ts("Number of Donors");
