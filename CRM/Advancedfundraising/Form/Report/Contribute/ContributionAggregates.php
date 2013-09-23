@@ -160,7 +160,8 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     $graphData['legend'] = ts($this->_barChartLegend);
 
     $graphData = array_merge($graphData, $this->_graphData);
-    CRM_Reportbase_Form_Report_OpenFlashChart::buildChart($graphData, $this->_params['charts']);
+    $chart = new CRM_Reportbase_Form_Report_OpenFlashChart();
+    $chart->buildChart($graphData, $this->_params['charts']);
     $this->assign('chartType', $this->_params['charts']);
   }
 
