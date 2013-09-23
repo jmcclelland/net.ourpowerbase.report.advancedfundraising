@@ -155,7 +155,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     }
     // build the chart.
     $config = CRM_Core_Config::Singleton();
-    $graphData['xname'] = ts('Base contribution period');
+    $graphData['xname'] = '';
     $graphData['yname'] = ts("Number of Donors");
     $graphData['legend'] = ts($this->_barChartLegend);
 
