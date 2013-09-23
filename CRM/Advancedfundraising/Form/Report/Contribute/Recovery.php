@@ -38,7 +38,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Recovery extends CRM_Advanc
   protected $_noFields = TRUE;
   protected $_preConstrain = TRUE; // generate a temp table of contacts that meet criteria & then build temp tables
   protected $_comparisonType = 'prior';
-  protected $_chartXName = 'Base contribution period';
+  protected $_chartXName = '';
 
   protected $_charts = array(
     '' => 'Tabular',
