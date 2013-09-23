@@ -158,10 +158,12 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     $graphData['xname'] = '';
     $graphData['yname'] = ts("Number of Donors");
     $graphData['legend'] = ts($this->_barChartLegend);
-    if(count($rows > 2)) {
+    if(count($rows) > 2) {
       // we need the labels for the tooltips but more than 2 bars & they look a mess
-      // so we are using the now-munted rotate fn to hide them
-      $graphData['hide_labels'] = TRUE;
+      // we want them to rotate - but rotate makes them disappear :-(
+      // still maybe someone will fix it one day & they will re-appear. For not disappeared is
+      // better than munted
+      $graphData['xlabelAngle'] = 30;
     }
 
     $graphData = array_merge($graphData, $this->_graphData);
