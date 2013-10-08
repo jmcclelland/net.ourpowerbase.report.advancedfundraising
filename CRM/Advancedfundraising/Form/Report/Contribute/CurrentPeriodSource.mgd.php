@@ -44,8 +44,8 @@ return array (
     'params' =>
     array (
       'version' => 3,
-      'label' => 'Donor Source',
-      'description' => 'Report displays whether donations in period are from new, renewed or re-activated givers',
+      'label' => 'PowerBase Donor Source',
+      'description' => 'PowerBase Report displays whether donations in period are from new, renewed or re-activated givers',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_CurrentPeriodSource',
       'report_url' => 'contribute/currentperiodsource',
       'component' => 'CiviContribute',

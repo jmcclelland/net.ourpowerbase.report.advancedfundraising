@@ -44,8 +44,8 @@ return array (
     'params' =>
     array (
       'version' => 3,
-      'label' => 'Contribution Renewals Report',
-      'description' => 'Report displays how many contributors have continued to contribute',
+      'label' => 'PowerBase Contribution Renewals Report',
+      'description' => 'PowerBase Report displays how many contributors have continued to contribute',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_Renewals',
       'report_url' => 'contribute/renewals',
       'component' => 'CiviContribute',

@@ -44,8 +44,8 @@ return array (
     'params' =>
     array (
       'version' => 3,
-      'label' => 'Contributor Recovery Report',
-      'description' => 'Report displays how many contributors have lapsed and been recovered',
+      'label' => 'PowerBase Contributor Recovery Report',
+      'description' => 'PowerBase Report displays how many contributors have lapsed and been recovered',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_Recovery',
       'report_url' => 'contribute/recovery',
       'component' => 'CiviContribute',

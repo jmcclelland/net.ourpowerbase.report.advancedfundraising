@@ -39,13 +39,13 @@
 return array (
   0 =>
   array (
-    'name' => 'Pledge Details',
+    'name' => 'PowerBase Pledge Details',
     'entity' => 'ReportTemplate',
     'params' =>
     array (
       'version' => 3,
-      'label' => 'Pledge Behaviour Detail',
-      'description' => 'Report displays details for Pledges from KPI',
+      'label' => 'PowerBase Pledge Behaviour Detail',
+      'description' => 'PowerBase Report displays details for Pledges from KPI',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails',
       'report_url' => 'pledge/aggregatedetails',
       'component' => 'CiviContribute',

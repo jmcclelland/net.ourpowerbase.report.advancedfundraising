@@ -44,8 +44,8 @@ return array (
     'params' =>
     array (
       'version' => 3,
-      'label' => 'Key Numbers Report',
-      'description' => 'Report displays Key performance Indicators',
+      'label' => 'PowerBase Key Numbers Report',
+      'description' => 'PowerBase Report displays Key performance Indicators',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers',
       'report_url' => 'contribute/keynumbers',
       'component' => 'CiviContribute',

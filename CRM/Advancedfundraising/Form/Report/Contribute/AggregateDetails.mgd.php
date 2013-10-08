@@ -44,8 +44,8 @@ return array (
     'params' =>
     array (
       'version' => 3,
-      'label' => 'Donor Behaviour Detail',
-      'description' => 'Report displays details for Renewal & Recovery Reports',
+      'label' => 'PowerBase Donor Behaviour Detail',
+      'description' => 'PowerBase Report displays details for Renewal & Recovery Reports',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_AggregateDetails',
       'report_url' => 'contribute/aggregatedetails',
       'component' => 'CiviContribute',

@@ -44,8 +44,8 @@ return array (
     'params' =>
     array (
       'version' => 3,
-      'label' => 'New Contributor Report',
-      'description' => 'Report displays how many contributors have given for the first time',
+      'label' => 'PowerBase New Contributor Report',
+      'description' => 'PowerBase Report displays how many contributors have given for the first time',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_New',
       'report_url' => 'contribute/new',
       'component' => 'CiviContribute',
