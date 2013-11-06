@@ -160,7 +160,17 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
           );
       }
     }
-
+    $defaultFilters = array (
+      'donor_number',
+      'total_amount',
+      'total_amount__individual',
+      'average_donation__individual',
+      'no_increased_donations__individual',
+      'current_sustainer_count',
+    );
+    if($extraDefault) {
+      $defaultFilters[] = $extraDefault;
+    }
      $this->_columns =  array('pseudotable' => array(
         'name' => 'civicrm_report_instance',
          'filters' => array(
@@ -169,15 +179,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
              'operatorType' => CRM_Report_Form::OP_MULTISELECT,
              'options' => $this->_kpiDescriptors,
              'title' => ts('Selected Performance Indicators'),
-             'default' => array(
-               'donor_number',
-               'total_amount',
-               'total_amount__individual',
-               'average_donation__individual',
-               'no_increased_donations__individual',
-               'current_sustainer_count',
-               $extraDefault
-               )
+             'default' => $defaultFilters
              ),
            )
        ))
