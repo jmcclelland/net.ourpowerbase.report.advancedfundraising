@@ -435,7 +435,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       $tempTable = $this->_tempTables['civicrm_contribution_multi'];
     }
     else{
-      $tempTable = $this->constructComparisonTable(CRM_Utils_Array::value('extra_fields', $extra));
+      $tempTable = $this->constructComparisonTable(CRM_Utils_Array::Value('extra_fields', $extra));
       $this->_tempTables['civicrm_contribution_multi'] = $tempTable;
     }
     //@todo hack differentiating summary based on contact & contribution report
@@ -475,8 +475,8 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
  */
   function setReportingStartDate($startParams) {
     if (! empty($startParams['start_offset']) && ! $this->_reportingStartDate) {
-      $startOffset = CRM_Utils_Array::value($startParams['start_offset'], $this->_params, $startParams['start_offset']);
-      $startOffsetUnit = CRM_Utils_Array::value($startParams['start_offset_unit'], $this->_params, $startParams['start_offset_unit']);
+      $startOffset = CRM_Utils_Array::Value($startParams['start_offset'], $this->_params, $startParams['start_offset']);
+      $startOffsetUnit = CRM_Utils_Array::Value($startParams['start_offset_unit'], $this->_params, $startParams['start_offset_unit']);
       $this->_reportingStartDate = date('Y-m-d', strtotime("-  $startOffset  $startOffsetUnit ", strtotime($this->_params['receive_date_value'])));
     }
   }
