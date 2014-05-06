@@ -168,10 +168,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Recovery extends CRM_Advanc
  */
   function beginPostProcess() {
     parent::beginPostProcess();
-    $this->beginPostProcessNoController();
   }
 
-  function beginPostProcessNoController() {
+  function beginPostProcessCommon() {
     $this->setReportingStartDate(array(
       'start_offset' => 'contribution_timeframe_value',
       'start_offset_unit' => 'month',)

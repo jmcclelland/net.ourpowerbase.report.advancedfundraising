@@ -64,7 +64,7 @@
  *
  *   4) comparison is 'none - there is no comparison range (e.g. for 'first')
  */
-class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates extends CRM_Reportbase_Form_Report_ReportBase {
+class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates extends CRM_Advancedfundraising_Form_Report_ReportBase {
   CONST OP_SINGLEDATE = 3;
   protected $_add2groupSupported = FALSE;
   protected $_ranges = array();
