@@ -138,17 +138,23 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         'link_status' => 'every',
       ),
     );
-    $extraDefault = NULL;
+    $extraDefault = array();
     $this->setFinancialType();
     if($this->financialTypeField == 'financial_type_id'){
       // we are dealing with a 4.3 + install so we will also get contact created data
       $this->_kpiSpecs['contact_count'] = array(
         'type' => CRM_Utils_Type::T_INT,
-        'title' => ts('New Contacts in Database'),
-        'contact_type_title' => ts('New %1s in Database'),
+        'title' => ts('New Contacts in Database Matching Giving Criteria'),
+        'contact_type_title' => ts('New %1s in Database Matching Giving Criteria'),
         'link_status' => NULL,
         );
-      $extraDefault = 'contact_count';
+      $this->_kpiSpecs['contact_count_all'] = array(
+        'type' => CRM_Utils_Type::T_INT,
+        'title' => ts('All New Contacts in Database'),
+        'contact_type_title' => ts('New %1s in Database'),
+        'link_status' => NULL,
+      );
+      $extraDefault = array('contact_count_all');
     }
     foreach ($this->_kpiSpecs as $specKey => $specs){
       $contactTypes =  $this->getContactTypeOptions();
@@ -169,7 +175,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       'current_sustainer_count',
     );
     if($extraDefault) {
-      $defaultFilters[] = $extraDefault;
+      $defaultFilters += $extraDefault;
     }
      $this->_columns =  array('pseudotable' => array(
         'name' => 'civicrm_report_instance',
@@ -297,6 +303,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     $this->calcSustainerCount();
     if($this->financialTypeField == 'financial_type_id'){
       $this->calcNewContactCount();
+      $this->calcNewContactCountAll();
     }
     $this->calcContactTypeDonationMaxMin();
     $this->_from = " FROM $tempTable";
@@ -648,7 +655,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
   }
 
   /**
-   * Add data about number of new contacts
+   * Add data about number of new contacts who meet giving criteria
    *
    * Contacts are counted if they
    *  1) were created since the start date of the range
@@ -681,6 +688,40 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         }
     }
   }
+
+  /**
+   * Add data about number of new contacts
+   *
+   * Contacts are counted if they
+   *  1) were created since the start date of the range
+   *  2) before the end date of the range
+   */
+  function calcNewContactCountAll(){
+    foreach($this->_years as $interval => $year){
+      $sql = "
+      SELECT
+      'interval_{$interval}' as range_name
+      , contact_type
+      , '" . $this->_ranges['interval_' . $interval]['from_date'] . "' as from_date
+        , '" . $this->_ranges['interval_' . $interval]['to_date'] . "' as to_date
+          , COALESCE(count(c.id),0) as contact_count
+          FROM civicrm_contact c
+          WHERE
+          c.created_date <= '" . $this->_ranges['interval_' . $interval]['to_date'] . "23-59-59'
+            AND c.created_date >= '" . $this->_ranges['interval_' . $interval]['from_date'] . "'
+            GROUP BY contact_type
+        WITH ROLLUP
+        ";
+        $result = CRM_Core_DAO::executeQuery($sql);
+          while($result->fetch()){
+            $field = 'contact_count_all';
+            if (!empty($result->contact_type)){
+              $field = 'contact_count_all__' . strtolower($result->contact_type);
+            }
+            $this->_kpis[$year][$field] = $result->contact_count;
+          }
+        }
+      }
 
 /**
  * We are just stashing our array of values into a table here - we could potentially render without a table
