@@ -167,7 +167,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     }
 
     $graphData = array_merge($graphData, $this->_graphData);
-    $chart = new CRM_Reportbase_Form_Report_OpenFlashChart();
+    $chart = new CRM_Advancedfundraising_Form_Report_OpenFlashChart();
     $chart->buildChart($graphData, $this->_params['charts']);
     $this->assign('chartType', $this->_params['charts']);
   }

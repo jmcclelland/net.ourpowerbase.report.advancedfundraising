@@ -45,7 +45,7 @@ require_once 'packages/OpenFlashChart/php-ofc-library/open-flash-chart.php';
  * However CRM_Utils_OpenFlashChart should ideally be restructured to use OOP as
  * extension currently difficult
  */
-class CRM_ReportBase_Form_Report_OpenFlashChart {
+class CRM_Advancedfundraising_Form_Report_OpenFlashChart {
   /**
      * colours.
      * @var array
