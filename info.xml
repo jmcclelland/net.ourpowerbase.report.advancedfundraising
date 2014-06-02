@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<extension key="net.ourpowerbase.reports.advancedfundraising" type="module">
+<extension key="net.ourpowerbase.report.advancedfundraising" type="module">
   <file>advancedfundraising</file>
   <name>Advanced Fundraising Reports for PTP</name>
   <description>Reports to help fundraisers view their progress sponsored by PTP</description>
