@@ -144,7 +144,7 @@ function _advancedfundraising_civix_civicrm_managed(&$entities) {
     $es = include $file;
     foreach ($es as $e) {
       if (empty($e['module'])) {
-        $e['module'] = 'net.ourpowerbase.reports.advancedfundraising';
+        $e['module'] = 'net.ourpowerbase.report.advancedfundraising';
       }
       $entities[] = $e;
     }
