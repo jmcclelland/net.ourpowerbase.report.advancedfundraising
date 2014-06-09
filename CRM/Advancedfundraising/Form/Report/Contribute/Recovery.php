@@ -167,8 +167,8 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Recovery extends CRM_Advanc
  * @see CRM_Extendedreport_Form_Report_Advancedfundraising::beginPostProcess()
  */
   function beginPostProcess() {
-    $this->beginPostProcessCommon();
     parent::beginPostProcess();
+    $this->beginPostProcessCommon();
   }
 
   function beginPostProcessCommon() {
