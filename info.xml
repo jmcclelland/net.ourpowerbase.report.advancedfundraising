@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <extension key="net.ourpowerbase.report.advancedfundraising" type="module">
   <file>advancedfundraising</file>
-  <name>Advanced Fundraising Reports for PTP</name>
+  <name>Advanced Fundraising Reports</name>
   <description>Reports to help fundraisers view their progress sponsored by PTP</description>
   <urls>
     <url desc="specifications">http://wiki.civicrm.org/confluence/display/CRM/CiviEngage+Enhancements+for+fund-raising</url>
