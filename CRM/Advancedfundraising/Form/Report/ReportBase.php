@@ -71,6 +71,7 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
 
   function __construct() {
     parent::__construct();
+
     $this->addSelectableCustomFields();
     $this->addTemplateSelector();
   }
@@ -153,6 +154,7 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
    * Backported purely to provide CRM-12687 which is in 4.4
    */
   function preProcess() {
+    $this->assign('civicrm_major_version', str_replace('.', '', substr(CRM_Utils_System::version(), 0, 3)));
     $this->preProcessCommon();
 
     if (!$this->_id) {
