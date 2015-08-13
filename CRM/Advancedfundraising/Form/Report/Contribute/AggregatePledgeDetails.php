@@ -29,8 +29,6 @@
  *
  * @package CRM
  * @copyright CiviCRM LLC (c) 2004-2013
- * $Id$
- *
  */
 class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails extends CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates {
   protected $_temporary = '  ';
@@ -153,14 +151,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
         ),
         ),
     );
-  }
-
-  function select(){
-    parent::select();
-  }
-
-  function where() {
-    parent::where();
   }
 
   function groupBy() {

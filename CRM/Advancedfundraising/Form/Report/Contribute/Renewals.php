@@ -101,14 +101,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Renewals extends CRM_Advanc
     parent::__construct();
   }
 
-  function preProcess() {
-    parent::preProcess();
-  }
-
-  function from(){
-    parent::from();
-  }
-
   function fromClauses( ) {
     if($this->_preConstrained){
       return $this->constrainedFromClause();
@@ -143,10 +135,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Renewals extends CRM_Advanc
       }
       $this->_select = " SELECT " . implode(', ', $select);
     }
-  }
-
-  function where() {
-    parent::where();
   }
 
   function groupBy() {

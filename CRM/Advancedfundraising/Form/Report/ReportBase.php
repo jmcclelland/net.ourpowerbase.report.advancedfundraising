@@ -70,10 +70,13 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
   protected $whereClauses = array();
 
   function __construct() {
-    parent::__construct();
+    $this->tabs['Filters'] = array(
+      'title' => ts('Filters'),
+      'tpl' => 'Filters',
+      'div_label' => 'set-filters',
+    );
 
-    $this->addSelectableCustomFields();
-    $this->addTemplateSelector();
+    parent::__construct();
   }
 
   /**
@@ -1466,133 +1469,6 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
       }
     }
 
-  }
-
-
-  /*
-  *
-  */
-
-  function addTemplateSelector(){
-
-   $templatesDir = str_replace('CRM/ReportBase', 'templates/CRM/ReportBase', __DIR__);
-    $templatesDir .= '/CustomTemplates';
-    $this->_templates = array(
-      'default' => 'default template',
-      'PhoneBank' => 'Phone Bank template - Phone.tpl'
-    );
-    $this->add('select', 'templates', ts('Select Alternate Template'), $this->_templates, FALSE,
-      array('id' => 'templates', 'title' => ts('- select -'),)
-    );
-  }
-
-  /**
-   * This is all just copied from the addCustomFields function -
-   * The point of this is to
-   * 1) put together the selection of fields using a prefix so that we can use multiple instances of the
-   *    same custom fields in a report - ie. so we can use the fields for 2 different contacts
-   * 2) we assign these fields as a flat list to the multiple select - might move to json later
-   */
-  function addSelectableCustomFields($addFields = TRUE) {
-
-    $extends = $customTableMapping = array();
-    if(!empty($this->_customGroupExtended)){
-      //lets try to assign custom data select fields
-      foreach ($this->_customGroupExtended as $spec){
-        $extends = array_merge($extends, $spec['extends']);
-      }
-    }
-    if(empty($extends)){
-      return;
-    }
-    $sql = "
-SELECT cg.table_name, cg.title, cg.extends, cf.id as cf_id, cf.label,
-       cf.column_name, cf.data_type, cf.html_type, cf.option_group_id, cf.time_format
-FROM   civicrm_custom_group cg
-INNER  JOIN civicrm_custom_field cf ON cg.id = cf.custom_group_id
-WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
-      cg.is_active = 1 AND
-      cf.is_active = 1 AND
-      cf.is_searchable = 1
-ORDER BY cg.weight, cf.weight";
-    $customDAO = CRM_Core_DAO::executeQuery($sql);
-
-    while ($customDAO->fetch()) {
-      $fieldName = 'custom_' . $customDAO->cf_id;
-      $currentTable = $customDAO->table_name;
-      $customFieldsTableFields[$customDAO->extends][$fieldName] = $customDAO->label;
-      if(empty($this->_customFields[$currentTable])) {
-        $this->_customFields[$currentTable] = array(
-          'dao' => 'CRM_Contact_DAO_Contact', // dummy dao object
-          'extends' => $customDAO->extends,
-          'grouping' => $customDAO->table_name,
-          'group_title' => $customDAO->title,
-          'name' => $customDAO->table_name,
-        );
-      }
-      $filters = array();
-      $this->_customFields[$currentTable]['fields'][$fieldName] = $this->extractFieldsAndFilters($customDAO, $fieldName, $filters);
-      $this->_customFields[$currentTable]['filters'][$fieldName] = $filters;
-      $fieldTableMapping[$fieldName] = $currentTable;
-      $customTableMapping[$customDAO->extends][] = $currentTable;
-    }
-
-    /*
-     * so, now we have all the information about the custom fields - let's apply it once per
-     * entity
-     */
-    $customFieldsFlat = array();
-    if(!empty($this->_customGroupExtended)){
-      //lets try to assign custom data select fields
-      foreach ($this->_customGroupExtended as $table => $spec){
-        $customFieldsTable[$table] = $spec['title'];
-        foreach ($spec['extends'] as $extendedEntity){
-          if(array_key_exists($extendedEntity, $customTableMapping)){
-            foreach ($customTableMapping[$extendedEntity] as $customTable){
-              $tableName = $this->_customFields[$customTable]['name'];
-              $tableAlias = $table . "_" . $this->_customFields[$customTable]['name'];
-              $this->_columns[$tableAlias] = $this->_customFields[$tableName];
-              $this->_columns[$tableAlias]['alias'] = $tableAlias;
-              $this->_columns[$table]['dao'] = 'CRM_Contact_DAO_Contact';
-              if(empty($spec['filters']) && isset($this->_columns[$tableAlias]['filters'])) {
-                unset($this->_columns[$tableAlias]['filters']);
-              }
-              else{
-               foreach ($this->_columns[$tableAlias]['filters'] as &$filter) {
-                 $filter['title'] = $spec['title'] . $filter['title'];
-               }
-              }
-              unset ($this->_columns[$tableAlias]['fields']);
-            }
-
-            foreach ($customFieldsTableFields[$extendedEntity] as $customFieldName => $customFieldLabel){
-              $customFields[$table][$table . ':' . $customFieldName] = $spec['title'] . " " . $customFieldLabel;
-              $customFieldsFlat[$table . ':' . $customFieldName] = $spec['title'] . " " . $customFieldLabel;
-            }
-          }
-        }
-      }
-    }
-    asort($customFieldsFlat);
-
-    if($this->_customGroupAggregates){
-      $this->add('select', 'aggregate_column_headers', ts('Aggregate Report Column Headers'), $customFieldsFlat, FALSE,
-        array('id' => 'aggregate_column_headers',  'title' => ts('- select -'))
-      );
-      $this->add('select', 'aggregate_row_headers', ts('Aggregate Report Rows'), $customFieldsFlat, FALSE,
-        array('id' => 'aggregate_row_headers',  'title' => ts('- select -'))
-      );
-    }
-
-    else{
-      $sel = $this->add('select', 'custom_tables', ts('Custom Columns'), $customFieldsTable, FALSE,
-        array('id' => 'custom_tables', 'multiple' => 'multiple', 'title' => ts('- select -'))
-      );
-
-      $this->add('select', 'custom_fields', ts('Custom Columns'), $customFieldsFlat, FALSE,
-        array('id' => 'custom_fields', 'multiple' => 'multiple', 'title' => ts('- select -'), 'hierarchy' => json_encode($customFields))
-      );
-    }
   }
 
   /*
