@@ -29,26 +29,19 @@
  *
  * @package CRM
  * @copyright CiviCRM LLC (c) 2004-2013
- * $Id$
- *
  */
-// This file declares a managed database record of type "ReportTemplate".
-// The record will be automatically inserted, updated, or deleted from the
-// database as appropriate. For more details, see "hook_civicrm_managed" at:
-// http://wiki.civicrm.org/confluence/display/CRMDOC42/Hook+Reference
-return array (
-  0 =>
-  array (
+return array(
+  0 => array(
     'name' => 'PowerBase Pledge Details',
     'entity' => 'ReportTemplate',
-    'params' =>
-    array (
+    'params' => array(
       'version' => 3,
       'label' => 'PowerBase Pledge Behaviour Detail',
-      'description' => 'PowerBase Report displays details for Pledges from KPI',
+      'description' => '(WIP - disabled - PowerBase Report displays details for Pledges from KPI',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails',
       'report_url' => 'pledge/aggregatedetails',
       'component' => 'CiviContribute',
+      'is_active' => 0,
     ),
   ),
 );

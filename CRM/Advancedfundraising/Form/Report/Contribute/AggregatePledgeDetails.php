@@ -35,7 +35,11 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
   protected $_baseTable = 'civicrm_contact';
   protected $_baseEntity = 'contact';
   protected $_noFields = TRUE;
-  protected $_preConstrain = TRUE; // generate a temp table of contacts that meet criteria & then build temp tables
+  /**
+   * Should we generate a temp table of contacts that meet criteria & then build the query.
+   * @var bool
+   */
+  protected $_preConstrain = TRUE;
   protected $_add2groupSupported = TRUE;
 
   protected $_charts = array(
@@ -85,7 +89,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
       ),
     );
 
-    $this->_columns =  array_merge_recursive($this->reportFilters, $this->getContributionColumns(array(
+    $this->_columns = array_merge_recursive($this->reportFilters, $this->getContributionColumns(array(
         'fields' => FALSE,
         'order_by' => FALSE,
       )))
