@@ -29,15 +29,17 @@
  *
  * @package CRM
  * @copyright CiviCRM LLC (c) 2004-2013
- * $Id$
- *
  */
 class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails extends CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates {
   protected $_temporary = '  ';
   protected $_baseTable = 'civicrm_contact';
   protected $_baseEntity = 'contact';
   protected $_noFields = TRUE;
-  protected $_preConstrain = TRUE; // generate a temp table of contacts that meet criteria & then build temp tables
+  /**
+   * Should we generate a temp table of contacts that meet criteria & then build the query.
+   * @var bool
+   */
+  protected $_preConstrain = TRUE;
   protected $_add2groupSupported = TRUE;
 
   protected $_charts = array(
@@ -87,7 +89,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
       ),
     );
 
-    $this->_columns =  array_merge_recursive($this->reportFilters, $this->getContributionColumns(array(
+    $this->_columns = array_merge_recursive($this->reportFilters, $this->getContributionColumns(array(
         'fields' => FALSE,
         'order_by' => FALSE,
       )))
@@ -153,14 +155,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
         ),
         ),
     );
-  }
-
-  function select(){
-    parent::select();
-  }
-
-  function where() {
-    parent::where();
   }
 
   function groupBy() {
