@@ -2129,45 +2129,6 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     return $result->N ? TRUE : FALSE;
   }
 
-  /**
-   * Function is over-ridden to support multiple add to groups
-   */
-  function buildInstanceAndButtons() {
-    $this->setVersion();
-    if (version_compare($this->fullVersion, '4.7.9') >= 0) {
-      $this->_actionButtonName = $this->getButtonName('submit');
-      $this->addTaskMenu($this->getActions($this->_id));
-      $this->assign('instanceForm', $this->_instanceForm);
-    }
-    else {
-      $this->legacyAddActions();
-    }
-
-
-    if (CRM_Core_Permission::check('administer Reports') && $this->_add2groupSupported) {
-      $this->addElement('select', 'groups', ts('Group'),
-        array('' => ts('- select group -')) + CRM_Core_PseudoConstant::staticGroup()
-      );
-      if (!empty($this->_add2GroupcontactTables) && is_array($this->_add2GroupcontactTables) && count($this->_add2GroupcontactTables > 1)) {
-        $this->addElement('select', 'btn_group_contact', ts('Contact to Add'),
-          array('' => ts('- choose contact -')) + $this->_add2GroupcontactTables
-        );
-      }
-      $this->assign('group', TRUE);
-    }
-    $label = ts('Add these Contacts to Group');
-    $this->addElement('submit', $this->_groupButtonName, $label, array('onclick' => 'return checkGroup();'));
-    $this->addChartOptions();
-    $this->addButtons(array(
-        array(
-          'type' => 'submit',
-          'name' => ts('Preview Report'),
-          'isDefault' => TRUE,
-        ),
-      )
-    );
-  }
-
   function getLineItemColumns() {
     return array(
       'civicrm_line_item' =>
@@ -4133,29 +4094,6 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
       ON {$this->_aliases['civicrm_contribution_summary' . $prefix]}.contact_id = {$this->_aliases['civicrm_contact']}.id";
   }
 
-  /**
-   * Add actions in a way compatible with pre 4.7.9 versions.
-   */
-  public function legacyAddActions() {
-    $label = $this->_id ? ts('Update Report') : ts('Create Report');
-    $this->addElement('submit', $this->_instanceButtonName, $label);
-    $this->addElement('submit', $this->_printButtonName, ts('Print Report'));
-    $this->addElement('submit', $this->_pdfButtonName, ts('PDF'));
-    if ($this->_id) {
-      $this->addElement('submit', $this->_createNewButtonName, ts('Save a Copy') . '...');
-    }
-    if ($this->_instanceForm) {
-      $this->assign('instanceForm', TRUE);
-    }
-    $label = $this->_id ? ts('Print Report') : ts('Print Preview');
-    $this->addElement('submit', $this->_printButtonName, $label);
-    $label = $this->_id ? ts('PDF') : ts('Preview PDF');
-    $this->addElement('submit', $this->_pdfButtonName, $label);
-    $label = $this->_id ? ts('Export to CSV') : ts('Preview CSV');
-    if ($this->_csvSupported) {
-      $this->addElement('submit', $this->_csvButtonName, $label);
-    }
-  }
   /*
    * Retrieve text for contribution type from pseudoconstant
   */
