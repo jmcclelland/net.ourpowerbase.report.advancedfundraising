@@ -33,7 +33,6 @@
  *
  */
 class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates {
-  protected $_temporary = '  ';
   protected $_baseTable = 'civicrm_contact';
   protected $_noFields = TRUE;
   protected $_kpis = array();

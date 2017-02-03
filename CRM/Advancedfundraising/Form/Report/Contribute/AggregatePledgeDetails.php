@@ -31,7 +31,6 @@
  * @copyright CiviCRM LLC (c) 2004-2013
  */
 class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails extends CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates {
-  protected $_temporary = '  ';
   protected $_baseTable = 'civicrm_contact';
   protected $_baseEntity = 'contact';
   protected $_noFields = TRUE;
