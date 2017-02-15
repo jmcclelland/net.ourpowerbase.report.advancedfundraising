@@ -632,8 +632,16 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       ";
     //insert data about primary range
     foreach ($this->_ranges as $rangeName => &$rangeSpecs) {
-      $inserts[] = " UPDATE $tempTable t,
-                  (  SELECT contact_id, sum({$this->_aliases['civicrm_contribution']}.total_amount) as total_amount,
+      $table_name = CRM_Core_DAO::createTempTableName();
+      $inserts[] = "CREATE  $temporary TABLE $table_name (
+                  `contact_id` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT 'Contact ID',
+                  `total_amount` FLOAT NOT NULL,
+                  `no_cont` INT(10) UNSIGNED NULL DEFAULT '0',
+                  INDEX `contact_id` (`contact_id`)
+                  )
+                  COLLATE='utf8_unicode_ci'
+                  ENGINE=HEAP;";
+      $inserts[] = "INSERT INTO $table_name SELECT contact_id, sum({$this->_aliases['civicrm_contribution']}.total_amount) as total_amount,
                       count({$this->_aliases['civicrm_contribution']}.id) as no_cont
                     FROM $tempTable tmp
                     INNER JOIN civicrm_contribution  {$this->_aliases['civicrm_contribution']} ON tmp.cid = {$this->_aliases['civicrm_contribution']}.contact_id
@@ -641,7 +649,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
                     BETWEEN '{$rangeSpecs['from_date']}' AND '{$rangeSpecs['to_date']} 23:59:59'
                     $contributionClause
                     GROUP BY contact_id
-                  ) as conts
+                  ";
+
+      $inserts[] = " UPDATE $tempTable t,
+                  $table_name as conts
                   SET {$rangeName}_amount = conts.total_amount,
                   {$rangeName}_no = no_cont
                   WHERE t.cid = contact_id
@@ -649,9 +660,17 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       //insert data about comparison range
       // if we are only looking at 'new' then there might not be a comparison period
       if (isset($rangeSpecs['comparison_from_date'])) {
-        $inserts[] = "
-          UPDATE $tempTable t,
-            ( SELECT contact_id
+        $table_name = CRM_Core_DAO::createTempTableName();
+        $inserts[] = "CREATE  $temporary TABLE $table_name (
+                    `contact_id` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT 'Contact ID',
+                    `total_amount` FLOAT NOT NULL,
+                    `no_cont` INT(10) UNSIGNED NULL DEFAULT '0',
+                    INDEX `contact_id` (`contact_id`)
+                    )
+                    COLLATE='utf8_unicode_ci'
+                    ENGINE=HEAP;";
+
+        $inserts[] = "SELECT contact_id
                 , sum({$this->_aliases['civicrm_contribution']}.total_amount) as total_amount
                 , count({$this->_aliases['civicrm_contribution']}.id) as no_cont
               FROM $tempTable tmp
@@ -659,8 +678,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
               WHERE {$this->_aliases['civicrm_contribution']}.receive_date
                 BETWEEN '{$rangeSpecs['comparison_from_date']}' AND '{$rangeSpecs['comparison_to_date']} 23:59:59'
                 $contributionClause
-              GROUP BY contact_id
-            ) as conts
+              GROUP BY contact_id";
+
+        $inserts[] = "UPDATE $tempTable t, $table_name as conts
             SET
               {$rangeName}_catch_amount = conts.total_amount,
               {$rangeName}_catch_no = no_cont
@@ -693,6 +713,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     if($this->tableExists($tempTableSummary)) {
       return $tempTableSummary;
     }
+    $first = TRUE;
     foreach ($this->_ranges as $rangeName => &$rangeSpecs) {
       // could do this above but will probably want this creation in a separate function
       $sql = "
@@ -714,11 +735,17 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
         ) AS comparison_{$status}_total ";
       }
 
-      $summarySQL[] = $sql . " FROM {$tempTable}";
+      $sql .= " FROM {$tempTable}";
+      if($first) {
+        $summarySQL = "CREATE table $tempTableSummary $sql";
+        $first = FALSE;
+      }
+      else {
+        $summarySQL = "INSERT INTO $tempTableSummary $sql";
+      }
+      CRM_Core_DAO::executeQuery($summarySQL);
     }
 
-    $newTableSQL = " CREATE table $tempTableSummary " . implode(' UNION ', $summarySQL);
-    CRM_Core_DAO::executeQuery($newTableSQL);
   }
   /**
  * Wrapper for status clauses
