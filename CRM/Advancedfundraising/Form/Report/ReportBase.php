@@ -3809,7 +3809,7 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
     $dropSql = "DROP TABLE IF EXISTS $tempTable";
     //@todo currently statuses are hard-coded as 1 for complete & 5-6 for pending
     $createSQL = "
-    CREATE {$this->temporary} table  $tempTable (
+    CREATE $temporary table  $tempTable (
       `event_id` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT 'FK to Event ID',
       `paid_amount` DECIMAL(42,2) NULL DEFAULT 0,
       `registered_amount` DECIMAL(48,6) NULL DEFAULT 0,
@@ -3871,7 +3871,7 @@ ON ({$this->_aliases['civicrm_event']}.id = {$this->_aliases['civicrm_participan
       $criteria .= " AND " . implode(' AND ', $extra['criteria']);
     }
     $createSql = "
-      CREATE TABLE $tempTable (
+      CREATE $temporary TABLE $tempTable (
       `contact_id` INT(10) UNSIGNED NOT NULL COMMENT 'Foreign key to civicrm_contact.id .',
       `contributionsummary{$prefix}` longtext NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
       INDEX `contact_id` (`contact_id`)
