@@ -74,6 +74,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
   protected $_baseEntity = NULL;
   protected $_tempTables = array();
   protected $_graphData = array();
+  protected $_cleanUpTables = array();
   /**
    * These are the labels for the available statuses.
    * Reports can over-ride them
@@ -128,6 +129,13 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     'contact_type_value',
     'contact_type_op',
   );
+
+  function __destruct() {
+    // Clean up any temporary tables.
+    foreach($this->_cleanUpTables as $table) {
+      CRM_Core_DAO::executeQuery("DROP TABLE `$table`");
+    }
+  }
 
   /**
    * Instruction to add a % on a stacked bar chart
@@ -460,6 +468,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       else{
         $this->createSummaryTable($tempTable);
         $tempTableSummary = $this->_tempTables['civicrm_contribution_multi_summary'] = $tempTable . '_summary';
+        if (!in_array($tempTableSummary, $this->_cleanUpTables)) {
+          $this->_cleanUpTables[] = $tempTableSummary;
+        }
       }
       $this->_from = " FROM {$tempTable}_summary";
 
@@ -566,6 +577,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
   */
   function constructComparisonTable() {
     $tempTable = 'civicrm_report_temp_conts' . date('d_H_I') . substr(md5(serialize($this->_ranges) . serialize($this->whereClauses)), 0, 6);
+    if (!in_array($tempTable, $this->_cleanUpTables)) {
+      $this->_cleanUpTables[] = $tempTable;
+    }
     if($this->tableExists($tempTable)) {
       return $tempTable;
     }
@@ -596,7 +610,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
 
     CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS $tempTable");
     $createTablesql = "
-                  CREATE  $temporary TABLE $tempTable (
+                  CREATE  TABLE $tempTable (
                   `cid` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT 'Contact ID',
                   `first_receive_date` DATE NOT NULL,
                   $columnStr
@@ -632,16 +646,8 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       ";
     //insert data about primary range
     foreach ($this->_ranges as $rangeName => &$rangeSpecs) {
-      $table_name = CRM_Core_DAO::createTempTableName();
-      $inserts[] = "CREATE  $temporary TABLE $table_name (
-                  `contact_id` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT 'Contact ID',
-                  `total_amount` FLOAT NOT NULL,
-                  `no_cont` INT(10) UNSIGNED NULL DEFAULT '0',
-                  INDEX `contact_id` (`contact_id`)
-                  )
-                  COLLATE='utf8_unicode_ci'
-                  ENGINE=HEAP;";
-      $inserts[] = "INSERT INTO $table_name SELECT contact_id, sum({$this->_aliases['civicrm_contribution']}.total_amount) as total_amount,
+      $inserts[] = " UPDATE $tempTable t,
+                  (  SELECT contact_id, sum({$this->_aliases['civicrm_contribution']}.total_amount) as total_amount,
                       count({$this->_aliases['civicrm_contribution']}.id) as no_cont
                     FROM $tempTable tmp
                     INNER JOIN civicrm_contribution  {$this->_aliases['civicrm_contribution']} ON tmp.cid = {$this->_aliases['civicrm_contribution']}.contact_id
@@ -649,10 +655,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
                     BETWEEN '{$rangeSpecs['from_date']}' AND '{$rangeSpecs['to_date']} 23:59:59'
                     $contributionClause
                     GROUP BY contact_id
-                  ";
-
-      $inserts[] = " UPDATE $tempTable t,
-                  $table_name as conts
+                  ) as conts
                   SET {$rangeName}_amount = conts.total_amount,
                   {$rangeName}_no = no_cont
                   WHERE t.cid = contact_id
@@ -660,17 +663,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       //insert data about comparison range
       // if we are only looking at 'new' then there might not be a comparison period
       if (isset($rangeSpecs['comparison_from_date'])) {
-        $table_name = CRM_Core_DAO::createTempTableName();
-        $inserts[] = "CREATE  $temporary TABLE $table_name (
-                    `contact_id` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT 'Contact ID',
-                    `total_amount` FLOAT NOT NULL,
-                    `no_cont` INT(10) UNSIGNED NULL DEFAULT '0',
-                    INDEX `contact_id` (`contact_id`)
-                    )
-                    COLLATE='utf8_unicode_ci'
-                    ENGINE=HEAP;";
-
-        $inserts[] = "SELECT contact_id
+        $inserts[] = "
+          UPDATE $tempTable t,
+            ( SELECT contact_id
                 , sum({$this->_aliases['civicrm_contribution']}.total_amount) as total_amount
                 , count({$this->_aliases['civicrm_contribution']}.id) as no_cont
               FROM $tempTable tmp
@@ -678,9 +673,8 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
               WHERE {$this->_aliases['civicrm_contribution']}.receive_date
                 BETWEEN '{$rangeSpecs['comparison_from_date']}' AND '{$rangeSpecs['comparison_to_date']} 23:59:59'
                 $contributionClause
-              GROUP BY contact_id";
-
-        $inserts[] = "UPDATE $tempTable t, $table_name as conts
+              GROUP BY contact_id
+            ) as conts
             SET
               {$rangeName}_catch_amount = conts.total_amount,
               {$rangeName}_catch_no = no_cont
@@ -713,7 +707,6 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     if($this->tableExists($tempTableSummary)) {
       return $tempTableSummary;
     }
-    $first = TRUE;
     foreach ($this->_ranges as $rangeName => &$rangeSpecs) {
       // could do this above but will probably want this creation in a separate function
       $sql = "
@@ -735,17 +728,11 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
         ) AS comparison_{$status}_total ";
       }
 
-      $sql .= " FROM {$tempTable}";
-      if($first) {
-        $summarySQL = "CREATE table $tempTableSummary $sql";
-        $first = FALSE;
-      }
-      else {
-        $summarySQL = "INSERT INTO $tempTableSummary $sql";
-      }
-      CRM_Core_DAO::executeQuery($summarySQL);
+      $summarySQL[] = $sql . " FROM {$tempTable}";
     }
 
+    $newTableSQL = " CREATE table $tempTableSummary " . implode(' UNION ', $summarySQL);
+    CRM_Core_DAO::executeQuery($newTableSQL);
   }
   /**
  * Wrapper for status clauses
