@@ -1592,11 +1592,11 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
       // - no manipulation to be done
       return;
     }
-
     foreach ($rows as $index => & $row) {
       foreach ($row as $selectedfield => $value) {
         if (array_key_exists($selectedfield, $alterfunctions)) {
-          $rows[$index][$selectedfield] = $this->$alterfunctions[$selectedfield]($value, $row, $selectedfield, $altermap[$selectedfield], $alterspecs[$selectedfield]);
+          $func = $alterfunctions[$selectedfield];
+          $rows[$index][$selectedfield] = $this->$func($value, $row, $selectedfield, $altermap[$selectedfield], $alterspecs[$selectedfield]);
         }
       }
     }
