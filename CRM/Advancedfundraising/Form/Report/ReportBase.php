@@ -1055,7 +1055,7 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
   }
 
 
-  
+
 
   /*
    * get name of template file
@@ -3371,7 +3371,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
   * Add join from contact table to email. Prefix will be added to both tables
   * as it's assumed you are using it to get address of a secondary contact
 */
-  function joinEmailFromContact( $prefix = '') {
+  protected function joinEmailFromContact($prefix = '', $extra = []) {
     $this->_from .= " LEFT JOIN civicrm_email {$this->_aliases[$prefix . 'civicrm_email']}
    ON {$this->_aliases[$prefix . 'civicrm_email']}.contact_id = {$this->_aliases[$prefix . 'civicrm_contact']}.id
    AND {$this->_aliases[$prefix . 'civicrm_email']}.is_primary = 1
@@ -3382,7 +3382,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
    * Add join from contact table to phone. Prefix will be added to both tables
   * as it's assumed you are using it to get address of a secondary contact
   */
-  function joinPhoneFromContact( $prefix = '') {
+  protected function joinPhoneFromContact($prefix = '', $extra = []) {
     $this->_from .= " LEFT JOIN civicrm_phone {$this->_aliases[$prefix . 'civicrm_phone']}
     ON {$this->_aliases[$prefix . 'civicrm_phone']}.contact_id = {$this->_aliases[$prefix . 'civicrm_contact']}.id";
   }
