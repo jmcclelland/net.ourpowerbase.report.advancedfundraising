@@ -669,103 +669,6 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
     }
   }
 
-  function addFilters() {
-    $options = $filters = array();
-    $count = 1;
-    foreach ($this->_filters as $table => $attributes) {
-      foreach ($attributes as $fieldName => $field) {
-        // get ready with option value pair
-        $operations = CRM_Utils_Array::value('operations', $field);
-        if(empty($operations)){
-          $operations = $this->getOperators(CRM_Utils_Array::value('operatorType', $field),
-            $fieldName
-          );
-        }
-
-        $filters[$table][$fieldName] = $field;
-
-        switch (CRM_Utils_Array::value('operatorType', $field)) {
-          case CRM_Report_Form::OP_MONTH:
-            if (!array_key_exists('options', $field) || !is_array($field['options']) || empty($field['options'])) {
-              // If there's no option list for this filter, define one.
-              $field['options'] = array(
-                1 => ts('January'),
-                2 => ts('February'),
-                3 => ts('March'),
-                4 => ts('April'),
-                5 => ts('May'),
-                6 => ts('June'),
-                7 => ts('July'),
-                8 => ts('August'),
-                9 => ts('September'),
-                10 => ts('October'),
-                11 => ts('November'),
-                12 => ts('December'),
-              );
-              // Add this option list to this column _columns. This is
-              // required so that filter statistics show properly.
-              $this->_columns[$table]['filters'][$fieldName]['options'] = $field['options'];
-            }
-          case CRM_Report_Form::OP_MULTISELECT:
-          case CRM_Report_Form::OP_MULTISELECT_SEPARATOR:
-            // assume a multi-select field
-            if (!empty($field['options'])) {
-              $element = $this->addElement('select', "{$fieldName}_op", ts('Operator:'), $operations);
-              if (count($operations) <= 1) {
-                $element->freeze();
-              }
-              $select = $this->addElement('select', "{$fieldName}_value", NULL,
-                $field['options'], array(
-                  'size' => 4,
-                  'style' => 'min-width:250px',
-                )
-              );
-              $select->setMultiple(TRUE);
-            }
-            break;
-
-          case CRM_Report_Form::OP_SELECT:
-            // assume a select field
-            $this->addElement('select', "{$fieldName}_op", ts('Operator:'), $operations);
-            $this->addElement('select', "{$fieldName}_value", NULL, $field['options']);
-            break;
-
-          case CRM_Report_Form::OP_DATE:
-            // build datetime fields
-            CRM_Core_Form_Date::buildDateRange($this, $fieldName, $count);
-            $count++;
-            break;
-
-          case self::OP_DATETIME:
-            // build datetime fields
-            CRM_Core_Form_Date::buildDateRange($this, $fieldName, $count, '_from', '_to', 'From:', FALSE, TRUE, 'searchDate', true);
-            $count++;
-            break;
-          case self::OP_SINGLEDATE:
-            // build single datetime field
-            $this->addElement('select', "{$fieldName}_op", ts('Operator:'), $operations);
-            $this->addDate("{$fieldName}_value", ts(''), FALSE);
-            $count++;
-            break;
-          case CRM_Report_Form::OP_INT:
-          case CRM_Report_Form::OP_FLOAT:
-            // and a min value input box
-            $this->add('text', "{$fieldName}_min", ts('Min'));
-            // and a max value input box
-            $this->add('text', "{$fieldName}_max", ts('Max'));
-          default:
-            // default type is string
-            $this->addElement('select', "{$fieldName}_op", ts('Operator:'), $operations,
-              array('onchange' => "return showHideMaxMinVal( '$fieldName', this.value );")
-            );
-            // we need text box for value input
-            $this->add('text', "{$fieldName}_value", NULL);
-            break;
-        }
-      }
-    }
-    $this->assign('filters', $filters);
-  }
   /**
    * We have over-riden this to provide the option of setting single date fields with defaults
    * and the option of setting 'to', 'from' defaults on date fields
@@ -1055,7 +958,7 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
   }
 
 
-
+  
 
   /*
    * get name of template file
