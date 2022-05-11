@@ -88,6 +88,17 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
       'tpl' => 'Filters',
       'div_label' => 'set-filters',
     );
+    $this->_columns['civicrm_contact']['filters']['is_deleted'] = [
+      'title' => ts('Deleted'),
+      'type' => CRM_Utils_Type::T_BOOLEAN,
+      'operatorType' => CRM_Report_Form::OP_SELECT,
+      'options' => [
+         '' => ts('Any'),
+         '0' => ts('No'),
+         '1' => ts('Yes'),
+       ],
+      'default' => 0,
+    ];
 
     parent::__construct();
   }
