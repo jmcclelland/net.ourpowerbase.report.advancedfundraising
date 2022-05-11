@@ -672,7 +672,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
           FROM {$this->_baseTable} {$this->_aliases[$this->_baseTable]}
           INNER JOIN civicrm_contact c ON c.id = {$this->_aliases[$this->_baseTable]}.id
           WHERE
-            c.created_date <= '" . $this->_ranges['interval_' . $interval]['to_date'] . "23-59-59'
+            c.created_date <= '" . $this->_ranges['interval_' . $interval]['to_date'] . " 23-59-59'
             AND c.created_date >= '" . $this->_ranges['interval_' . $interval]['from_date'] . "'
         GROUP BY contact_type
         WITH ROLLUP
