@@ -385,6 +385,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       percent_change INT(10) NULL
     )";
     CRM_Core_DAO::executeQuery($sql);
+    $this->addToDeveloperTab($sql);
     return $tempTable;
   }
 
@@ -400,6 +401,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     ;
     ";
     $result = CRM_Core_DAO::executeQuery($sql);
+    $this->addToDeveloperTab($sql);
     while($result->fetch()){
       $values = explode(',', $result->val);
       $this->_kpis[$this->_currentYear][$kpi] = CRM_Utils_Array::value(0, $values, 0);
@@ -435,6 +437,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       GROUP BY contact_type
     ";
     $result = CRM_Core_DAO::executeQuery($sql);
+    $this->addToDeveloperTab($sql);
     while($result->fetch()){
       $this->_kpis[$this->_currentYear]['total_amount__' . strtolower($result->contact_type)] = $result->this_year;
       $this->_kpis[$this->_lastYear]['total_amount__' . strtolower($result->contact_type)] = $result->last_year;
@@ -455,6 +458,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       GROUP BY contact_type
     ";
     $result = CRM_Core_DAO::executeQuery($sql);
+    $this->addToDeveloperTab($sql);
     while($result->fetch()){
       $contactType = strtolower($result->contact_type);
       $this->_kpis[$this->_currentYear]['donor_number__' . $contactType] = $result->this_year;
@@ -485,6 +489,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       WITH ROLLUP
     ";
     $result = CRM_Core_DAO::executeQuery($sql);
+    $this->addToDeveloperTab($sql);
     while($result->fetch()){
       $this->_kpis[$this->$year]['highest_donation__' . strtolower($result->contact_type)] = $result->max;
       $this->_kpis[$this->$year]['lowest_donation__' . strtolower($result->contact_type)] = $result->min;
@@ -536,6 +541,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       GROUP BY contact_type
     ";
     $result = CRM_Core_DAO::executeQuery($sql);
+    $this->addToDeveloperTab($sql);
     while($result->fetch()){
       $this->_kpis[$this->_currentYear]['no_increased_donations__' . strtolower($result->contact_type)] = $result->this_year;
       $this->_kpis[$this->_lastYear]['no_increased_donations__' . strtolower($result->contact_type)] = $result->last_year;
@@ -576,6 +582,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         WITH ROLLUP
         ";
         $result = CRM_Core_DAO::executeQuery($sql);
+        $this->addToDeveloperTab($sql);
         while($result->fetch()){
           $field = 'current_pledge_count';
           if(!empty($result->contact_type)){
@@ -622,6 +629,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         ";
 
         $result = CRM_Core_DAO::executeQuery($sql);
+        $this->addToDeveloperTab($sql);
         while($result->fetch()){
           $field = 'current_recur_count';
           if(!empty($result->contact_type)){
@@ -678,6 +686,8 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         WITH ROLLUP
         ";
         $result = CRM_Core_DAO::executeQuery($sql);
+
+          $this->addToDeveloperTab($sql);
           while($result->fetch()){
           $field = 'contact_count';
           if(!empty($result->contact_type)){
@@ -712,6 +722,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         WITH ROLLUP
         ";
         $result = CRM_Core_DAO::executeQuery($sql);
+        $this->addToDeveloperTab($sql);
           while($result->fetch()){
             $field = 'contact_count_all';
             if (!empty($result->contact_type)){
@@ -748,6 +759,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         INSERT INTO $temptable VALUES $insertClause
       ";
     CRM_Core_DAO::executeQuery($sql);
+    $this->addToDeveloperTab($sql);
   }
   /**
    * Create links to detailed report for various numbers
