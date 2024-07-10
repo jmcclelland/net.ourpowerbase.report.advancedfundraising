@@ -17,8 +17,16 @@
   <compatibility>
     <ver>5.57</ver>
   </compatibility>
-  <comments></comments>
+  <comments/>
   <civix>
     <namespace>CRM/AdvancedFundraising</namespace>
+    <format>23.02.1</format>
   </civix>
+  <mixins>
+    <mixin>mgd-php@1.0.0</mixin>
+  </mixins>
+  <classloader>
+    <psr0 prefix="CRM_" path="."/>
+    <psr4 prefix="Civi\" path="Civi"/>
+  </classloader>
 </extension>
