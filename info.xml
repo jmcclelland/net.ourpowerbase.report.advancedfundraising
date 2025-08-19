@@ -20,7 +20,7 @@
   <comments/>
   <civix>
     <namespace>CRM/AdvancedFundraising</namespace>
-    <format>23.02.1</format>
+    <format>25.01.1</format>
   </civix>
   <mixins>
     <mixin>mgd-php@1.0.0</mixin>
