@@ -12,7 +12,7 @@
     <email>eileen@fuzion.co.nz</email>
   </maintainer>
   <releaseDate>2016-08-01</releaseDate>
-  <version>1.0.7</version>
+  <version>1.0.8</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>5.57</ver>
