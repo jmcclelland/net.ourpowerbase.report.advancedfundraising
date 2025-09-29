@@ -5,6 +5,7 @@
   <description>Reports to help fundraisers view their progress sponsored by PTP</description>
   <urls>
     <url desc="specifications">http://wiki.civicrm.org/confluence/display/CRM/CiviEngage+Enhancements+for+fund-raising</url>
+    <url desc="documentation">https://github.com/jmcclelland/net.ourpowerbase.report.advancedfundraising.git</url>
   </urls>
   <license>agpl</license>
   <maintainer>
