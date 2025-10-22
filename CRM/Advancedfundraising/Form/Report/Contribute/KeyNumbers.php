@@ -495,7 +495,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       $this->_kpis[$this->$year]['lowest_donation__' . strtolower($result->contact_type)] = $result->min;
     }
     $this->_kpis[$this->$year]['highest_donation'] = CRM_Utils_Array::value('highest_donation__', $this->_kpis[$this->$year], 0);
-    $this->_kpis[$this->$year]['lowest_donation'] = CRM_Utils_Array::value('lowest_donation__', $this->_kpis[$this->$year]);
+    $this->_kpis[$this->$year]['lowest_donation'] = $this->_kpis[$this->$year]['lowest_donation__'] ?? NULL;
     }
   }
 
