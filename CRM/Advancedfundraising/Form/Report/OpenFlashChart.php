@@ -132,16 +132,16 @@ class chart {
     if (empty($params)) {
       return $chart;
     }
-    $this->values = CRM_Utils_Array::value('values', $params);
+    $this->values = $params['values'] ?? NULL;
     if (! is_array($this->values) || empty($this->values)) {
       return $chart;
     }
-    $this->chartTitle = CRM_Utils_Array::value('title', $params);
+    $this->chartTitle = $params['title'] ?? NULL;
     $this->xlabelAngle = CRM_Utils_Array::value('xlabelAngle', $params, 0);
     $this->createChartElement();
     $this->setChartValues();
     $this->setToolTip(CRM_Utils_Array::value('tip', $params));
-    $this->onClickFunName = CRM_Utils_Array::value('on_click_fun_name', $params);
+    $this->onClickFunName = $params['on_click_fun_name'] ?? NULL;
   }
 
   /**
@@ -219,9 +219,9 @@ class barchart extends chart {
   function __construct($params) {
     parent::__construct($params);
     $this->setYMaxYSteps();
-    $this->xAxisName = CRM_Utils_Array::value('xname', $params);
-    $this->yAxisName = CRM_Utils_Array::value('yname', $params);
-    $this->xlabels = CRM_Utils_Array::value('xlabels', $params);
+    $this->xAxisName = $params['xname'] ?? NULL;
+    $this->yAxisName = $params['yname'] ?? NULL;
+    $this->xlabels = $params['xlabels'] ?? NULL;
     $this->chartTitle = CRM_Utils_Array::value('legend', $params, ts('Bar Chart'));
     // call user define function to handle on click event.
     if ($this->onClickFunName) {

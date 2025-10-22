@@ -171,11 +171,11 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
     $earliestDate = date('Y-m-d');
     $latestDate = date('Y-m-d', strtotime('50 years ago'));
     foreach ($dateFields as $fieldName => $prefix){
-      $relative = CRM_Utils_Array::value("{$fieldName}_relative", $this->_params);
-      $from     = CRM_Utils_Array::value("{$fieldName}_from", $this->_params);
-      $to       = CRM_Utils_Array::value("{$fieldName}_to", $this->_params);
-      $fromTime = CRM_Utils_Array::value("{$fieldName}_from_time", $this->_params);
-      $toTime   = CRM_Utils_Array::value("{$fieldName}_to_time", $this->_params);
+      $relative = $this->_params["{$fieldName}_relative"] ?? NULL;
+      $from     = $this->_params["{$fieldName}_from"] ?? NULL;
+      $to       = $this->_params["{$fieldName}_to"] ?? NULL;
+      $fromTime = $this->_params["{$fieldName}_from_time"] ?? NULL;
+      $toTime   = $this->_params["{$fieldName}_to_time"] ?? NULL;
       list($from, $to) = CRM_Report_Form::getFromTo($relative, $from, $to,  $fromTime, $toTime);
       $this->_ranges['interval_0'][$prefix . 'from_date'] = DATE('Y-m-d', strtotime($from));
       $this->_ranges['interval_0'][$prefix . 'to_date'] = DATE('Y-m-d', strtotime($to));

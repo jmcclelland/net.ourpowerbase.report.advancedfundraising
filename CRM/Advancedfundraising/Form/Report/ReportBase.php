@@ -497,32 +497,32 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
           $clause = NULL;
           if (CRM_Utils_Array::value('type', $field) & CRM_Utils_Type::T_DATE) {
             if (CRM_Utils_Array::value('operatorType', $field) == CRM_Report_Form::OP_MONTH) {
-              $op = CRM_Utils_Array::value("{$fieldName}_op", $this->_params);
-              $value = CRM_Utils_Array::value("{$fieldName}_value", $this->_params);
+              $op = $this->_params["{$fieldName}_op"] ?? NULL;
+              $value = $this->_params["{$fieldName}_value"] ?? NULL;
               if (is_array($value) && !empty($value)) {
                 $clause = "(month({$field['dbAlias']}) $op (" . implode(', ', $value) . '))';
                 $this->whereClauses[$tableName][] = $clause;
               }
             }
             else {
-              $relative = CRM_Utils_Array::value("{$fieldName}_relative", $this->_params);
-              $from     = CRM_Utils_Array::value("{$fieldName}_from", $this->_params);
-              $to       = CRM_Utils_Array::value("{$fieldName}_to", $this->_params);
-              $fromTime = CRM_Utils_Array::value("{$fieldName}_from_time", $this->_params);
-              $toTime   = CRM_Utils_Array::value("{$fieldName}_to_time", $this->_params);
+              $relative = $this->_params["{$fieldName}_relative"] ?? NULL;
+              $from     = $this->_params["{$fieldName}_from"] ?? NULL;
+              $to       = $this->_params["{$fieldName}_to"] ?? NULL;
+              $fromTime = $this->_params["{$fieldName}_from_time"] ?? NULL;
+              $toTime   = $this->_params["{$fieldName}_to_time"] ?? NULL;
               // next line is the changed one
               $clause   = $this->dateClause($field['dbAlias'], $relative, $from, $to, $field, $fromTime, $toTime);
               $this->whereClauses[$tableName][] = $clause;
             }
           }
           else {
-            $op = CRM_Utils_Array::value("{$fieldName}_op", $this->_params);
+            $op = $this->_params["{$fieldName}_op"] ?? NULL;
             if ($op) {
               $clause = $this->whereClause($field,
                 $op,
-                CRM_Utils_Array::value("{$fieldName}_value", $this->_params),
-                CRM_Utils_Array::value("{$fieldName}_min", $this->_params),
-                CRM_Utils_Array::value("{$fieldName}_max", $this->_params)
+                $this->_params["{$fieldName}_value"] ?? NULL,
+                $this->_params["{$fieldName}_min"] ?? NULL,
+                $this->_params["{$fieldName}_max"] ?? NULL
               );
               if(!empty($clause)){
                 $this->whereClauses[$tableName][] = $clause;
@@ -730,8 +730,8 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
             if (CRM_Utils_Array::value('type', $field) & CRM_Utils_Type::T_DATE
               && !(CRM_Utils_Array::value('operatorType', $field) == self::OP_SINGLEDATE)) {
               if(is_array($field['default'])){
-                $this->_defaults["{$fieldName}_from"] = CRM_Utils_Array::value('from', $field['default']);
-                $this->_defaults["{$fieldName}_to"] = CRM_Utils_Array::value('to', $field['default']);
+                $this->_defaults["{$fieldName}_from"] = $field['default']['from'] ?? NULL;
+                $this->_defaults["{$fieldName}_to"] = $field['default']['to'] ?? NULL;
                 $this->_defaults["{$fieldName}_relative"] = 0;
               }
               else{
@@ -750,7 +750,7 @@ class CRM_Advancedfundraising_Form_Report_ReportBase extends CRM_Report_Form {
           elseif (CRM_Utils_Array::value('operatorType', $field) == CRM_Report_Form::OP_MULTISELECT_SEPARATOR) {
             $this->_defaults["{$fieldName}_op"] = 'mhas';
           }
-          elseif ($op = CRM_Utils_Array::value('default_op', $field)) {
+          elseif ($op = $field['default_op'] ?? NULL) {
             $this->_defaults["{$fieldName}_op"] = $op;
           }
         }
@@ -1403,8 +1403,8 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
   function selectClause(&$tableName, $tableKey, &$fieldName, &$field) {
     if($fieldName == 'phone'){
       $alias = "{$tableName}_{$fieldName}";
-      $this->_columnHeaders["{$tableName}_{$fieldName}"]['title'] = CRM_Utils_Array::value('title', $field);
-      $this->_columnHeaders["{$tableName}_{$fieldName}"]['type'] = CRM_Utils_Array::value('type', $field);
+      $this->_columnHeaders["{$tableName}_{$fieldName}"]['title'] = $field['title'] ?? NULL;
+      $this->_columnHeaders["{$tableName}_{$fieldName}"]['type'] = $field['type'] ?? NULL;
       $this->_selectAliases[] = $alias;
       $this->_columnHeaders['civicrm_tag_tag_name'];
       return " GROUP_CONCAT(CONCAT({$field['dbAlias']},':', phone_civireport.location_type_id) ) as $alias";
@@ -1785,7 +1785,7 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
     $from = CRM_Report_Utils_Get::getTypedValue("{$fieldName}_from", $type);
     $to = CRM_Report_Utils_Get::getTypedValue("{$fieldName}_to", $type);
 
-    $relative = CRM_Utils_Array::value("{$fieldName}_relative", $_GET);
+    $relative = $_GET["{$fieldName}_relative"] ?? NULL;
     if ($relative) {
       list($from, $to) = CRM_Report_Form::getFromTo($relative, NULL, NULL);
       $from = substr($from, 0, 8);
