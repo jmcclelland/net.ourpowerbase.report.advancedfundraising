@@ -157,7 +157,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       $graphData['end_date'][] = $row['to_date'];
       $statusValues = array();
       foreach ($this->_statuses as $status){
-        $statusValues[] = (integer) $row[$status];
+        $statusValues[] = (int) $row[$status];
       }
       $graphData['values'][] = $statusValues;
     }
@@ -186,9 +186,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       $graphData['end_date'][] = $row['to_date'];
       foreach ($this->_statuses as $status){
         $graphData['value'][] =
-          (integer) $row[$status]
+          (int) $row[$status]
         ;
-        $graphData['values'][$index][$status] = (integer) $row[$status];
+        $graphData['values'][$index][$status] = (int) $row[$status];
       }
     }
 

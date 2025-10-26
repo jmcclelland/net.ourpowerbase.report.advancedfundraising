@@ -276,7 +276,7 @@ class barchart extends chart {
  */
   function setChartValues(){
     foreach ($this->values as $xVal => $yVal) {
-      $this->yValues[] = (double) $yVal[0];
+      $this->yValues[] = (float) $yVal[0];
       $this->xValues[] = (string) $xVal;
     }
     $this->chartElement->set_values($this->yValues);
