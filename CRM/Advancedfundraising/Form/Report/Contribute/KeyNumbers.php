@@ -358,7 +358,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         $thisYear = TRUE;
       }
       $columns = array(
-        'description' => ts(''),
+        'description' => '',
         'this_year' => $thisYear ? ts('This Year') : ts('Main Date Range'),
         'percent_change' => ts('Percent Change'),
         'last_year' => $thisYear ? ts ('Last Year') : ts('One year Prior Range'),
