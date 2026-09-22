@@ -39,61 +39,61 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Renewals extends CRM_Advanc
   protected $_preConstrain = TRUE; // generate a temp table of contacts that meet criteria & then build temp tables
   protected $_chartXName = 'Base contribution period';
 
-  protected $_charts = array(
+  protected $_charts = [
     '' => 'Tabular',
     'barChartStack' => 'Bar Chart',
-  );
+  ];
 
-  public $_drilldownReport = array('contribute/detail' => 'Link to Detail Report');
+  public $_drilldownReport = ['contribute/detail' => 'Link to Detail Report'];
 
   function __construct() {
-    $this->_statuses = array('renewed', 'lapsed');
+    $this->_statuses = ['renewed', 'lapsed'];
     $this->barChartLegend = ts('Subsequent contributions for Contributors in Base Period');
-    $this->reportFilters = array(
-      'civicrm_contribution' => array(
-        'filters' => array(
-          'receive_date' => array(),
-          'contribution_baseline_interval' => array(
+    $this->reportFilters = [
+      'civicrm_contribution' => [
+        'filters' => [
+          'receive_date' => [],
+          'contribution_baseline_interval' => [
             'title' => ts('Contribution Time Interval'),
             'pseudofield' => TRUE,
             'operatorType' => CRM_Report_Form::OP_INT,
             'default' => 12,
             'type' => CRM_Report_Form::OP_INT,
             'required' => TRUE,
-            'operations' => array('eq' => 'Is equal to'),
-          ),
-          'contribution_renewal_comparison' => array(
+            'operations' => ['eq' => 'Is equal to'],
+          ],
+          'contribution_renewal_comparison' => [
             'title' => ts('Renewal timeframe'),
             'pseudofield' => TRUE,
-            'operations' => array('eq' => 'Is equal to'),
+            'operations' => ['eq' => 'Is equal to'],
             'default' => 12,
             'type' => CRM_Report_Form::OP_INT,
-          ),
-          'contribution_no_periods' => array(
+          ],
+          'contribution_no_periods' => [
             'title' => ts('Number of periods to show'),
             'pseudofield' => TRUE,
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'default' => 4,
-            'operations' => array('eq' => 'Is equal to'),
+            'operations' => ['eq' => 'Is equal to'],
             'type' => CRM_Report_Form::OP_INT,
-            'options' => array(1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6 ),
-          ),
-        )
-      ),
-    );
-    $this->_columns =  array_merge_recursive($this->reportFilters, $this->getContributionColumns(array(
+            'options' => [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6 ],
+          ],
+        ]
+      ],
+    ];
+    $this->_columns =  array_merge_recursive($this->reportFilters, $this->getContributionColumns([
         'fields' => FALSE,
         'order_by' => FALSE,
-      )))  ;
+      ]))  ;
 
     $this->_columns['civicrm_contribution']['filters'] ['receive_date']['operatorType'] = parent::OP_SINGLEDATE;
     $this->_columns['civicrm_contribution']['filters'] ['receive_date']['title'] = 'Cut-off date';
-    $this->_columns['civicrm_contribution']['filters'] ['receive_date']['operations'] = array('to' =>  'Is equal to');
+    $this->_columns['civicrm_contribution']['filters'] ['receive_date']['operations'] = ['to' =>  'Is equal to'];
     $this->_columns['civicrm_contribution']['filters'] ['receive_date']['default'] = date('m/d/Y',strtotime('31 Dec last year'));
     $this->_columns['civicrm_contribution']['filters'] ['receive_date']['pseudofield'] = TRUE;
     $this->_aliases['civicrm_contact']  = 'civicrm_report_contact';
     $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['default']
-    = array(array_search('Completed', $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['options']));
+    = [array_search('Completed', $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['options'])];
 
     $this->_tagFilter = TRUE;
     $this->_groupFilter = TRUE;
@@ -105,16 +105,16 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Renewals extends CRM_Advanc
       return $this->constrainedFromClause();
     }
     else{
-      return array(
+      return [
         'contribution_from_contact',
-      ) + $this->constrainedFromClause();
+      ] + $this->constrainedFromClause();
     }
   }
 
   function constrainedFromClause(){
-    return array(
+    return [
       'timebased_contribution_from_contact'
-    );
+    ];
   }
 
   function select(){
@@ -122,15 +122,15 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Renewals extends CRM_Advanc
       parent::select();
     }
     else{
-      $columns = array(
+      $columns = [
         'from_date' => ts('From date'),
         'to_date' => ts('To Date'),
         'renewed' => ts('Renewals'),
         'lapsed' => ts('Lapsed')
-      );
+      ];
       foreach ($columns as $column => $title){
         $select[]= " $column ";
-        $this->_columnHeaders[$column] = array('title' => $title);
+        $this->_columnHeaders[$column] = ['title' => $title];
       }
       $this->_select = " SELECT " . implode(', ', $select);
     }
@@ -149,14 +149,14 @@ class CRM_Advancedfundraising_Form_Report_Contribute_Renewals extends CRM_Advanc
 
   function beginPostProcess() {
     parent::beginPostProcess();
-    $this->constructRanges(array(
+    $this->constructRanges([
       'cutoff_date' => 'receive_date_value',
       'offset_unit' => 'month',
       'offset' => 'contribution_baseline_interval_value',
       'comparison_offset' => 'contribution_renewal_comparison_value',
       'comparison_offset_unit' => 'month',
       'no_periods' => 'contribution_no_periods_value',
-    )
+    ]
     );
   }
 }

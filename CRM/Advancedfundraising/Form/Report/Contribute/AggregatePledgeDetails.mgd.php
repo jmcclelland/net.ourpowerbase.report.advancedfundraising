@@ -30,11 +30,11 @@
  * @package CRM
  * @copyright CiviCRM LLC (c) 2004-2013
  */
-return array(
-  0 => array(
+return [
+  0 => [
     'name' => 'PowerBase Pledge Details',
     'entity' => 'ReportTemplate',
-    'params' => array(
+    'params' => [
       'version' => 3,
       'label' => 'PowerBase Pledge Behaviour Detail',
       'description' => '(WIP - disabled - PowerBase Report displays details for Pledges from KPI',
@@ -42,6 +42,6 @@ return array(
       'report_url' => 'pledge/aggregatedetails',
       'component' => 'CiviContribute',
       'is_active' => 0,
-    ),
-  ),
-);
+    ],
+  ],
+];

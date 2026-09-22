@@ -53,12 +53,12 @@ class CRM_Advancedfundraising_Form_Report_OpenFlashChart {
      */
 
   function buildChart(&$params, $chart) {
-    $openFlashChart = array();
+    $openFlashChart = [];
     if ($chart && is_array($params) && ! empty($params)) {
       $chartInstance = new $chart($params);
       $chartInstance->buildChart();
       $chartObj = $chartInstance->getChart();
-      $openFlashChart = array();
+      $openFlashChart = [];
       if ($chartObj) {
         // calculate chart size.
         $xSize = CRM_Utils_Array::value('xSize', $params, 400);
@@ -78,10 +78,10 @@ class CRM_Advancedfundraising_Form_Report_OpenFlashChart {
         // generate unique id for this chart instance
         $uniqueId = md5(uniqid(rand(), TRUE));
 
-        $openFlashChart["chart_{$uniqueId}"]['size'] = array(
+        $openFlashChart["chart_{$uniqueId}"]['size'] = [
           'xSize' => $xSize,
           'ySize' => $ySize
-        );
+        ];
         $openFlashChart["chart_{$uniqueId}"]['object'] = $chartObj;
 
         // assign chart data to template
@@ -100,7 +100,7 @@ class CRM_Advancedfundraising_Form_Report_OpenFlashChart {
    *
    */
 class chart {
-  protected $_colours = array(
+  protected $_colours = [
     "#C3CC38",
     "#C8B935",
     "#CEA632",
@@ -113,10 +113,10 @@ class chart {
     "#6F8069",
     "#C92200",
     "#EB6C5C"
-  );
+  ];
   protected $chartTitle;
-  protected $values = array();
-  protected $tooltip = array();
+  protected $values = [];
+  protected $tooltip = [];
   protected $chart = null;
   protected $chartElement = null;
   protected $onClickFunName = null;
@@ -200,8 +200,8 @@ function setChartValues(){
    *
    */
 class barchart extends chart {
-  protected $xValues = array();
-  protected $yValues = array();
+  protected $xValues = [];
+  protected $yValues = [];
   protected $xAxis = null;
   protected $yAxis = null;
   protected $yMin = 0;
@@ -335,12 +335,12 @@ class barchart extends chart {
    *
    */
 class barChartStack extends barchart {
-  protected $keyLabels = array();
-  protected $_colours = array(
+  protected $keyLabels = [];
+  protected $_colours = [
     "#C3CC38",
-    "#CEA632",);
+    "#CEA632",];
   protected $tagPercent = TRUE;
-  protected $tags = array();
+  protected $tags = [];
   function __construct($params) {
     $this->keyLabels =  $this->createKeyLabels($params['labels']);
     parent::__construct($params);
@@ -384,7 +384,7 @@ class barChartStack extends barchart {
  * @return multitype:bar_stack_key
  */
   function createKeyLabels($labels){
-    $keyLabels = array();
+    $keyLabels = [];
     foreach ($labels as $index => $label){
       $keyLabels[] = new bar_stack_key($this->_colours[$index], $label, 13);
     }
