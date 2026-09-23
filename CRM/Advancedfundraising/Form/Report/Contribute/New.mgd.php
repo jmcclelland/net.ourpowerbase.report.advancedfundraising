@@ -36,19 +36,19 @@
 // The record will be automatically inserted, updated, or deleted from the
 // database as appropriate. For more details, see "hook_civicrm_managed" at:
 // http://wiki.civicrm.org/confluence/display/CRMDOC42/Hook+Reference
-return array (
+return [
   0 =>
-  array (
+  [
     'name' => 'New Contributors Report',
     'entity' => 'ReportTemplate',
     'params' =>
-    array (
+    [
       'version' => 3,
       'label' => 'PowerBase New Contributor Report',
       'description' => 'PowerBase Report displays how many contributors have given for the first time',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_New',
       'report_url' => 'contribute/new',
       'component' => 'CiviContribute',
-    ),
-  ),
-);
+    ],
+  ],
+];

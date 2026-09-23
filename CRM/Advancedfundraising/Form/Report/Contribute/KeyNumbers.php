@@ -35,18 +35,18 @@
 class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates {
   protected $_baseTable = 'civicrm_contact';
   protected $_noFields = TRUE;
-  protected $_kpis = array();
+  protected $_kpis = [];
   protected $_preConstrain = TRUE;
   protected $_comparisonType = 'prior';
 
-  protected $_kpiDescriptors = array(
-  );
+  protected $_kpiDescriptors = [
+  ];
   /*
    * Array to store specifications of the available kpis. I was defining these here
    * but I think that doesn't allow the string to be exposed as translatable
    * for translators as you can't do a 'ts' in here
    */
-  protected $_kpiSpecs = array();
+  protected $_kpiSpecs = [];
 
   /*
    * we'll store these as a property so we only have to calculate once
@@ -60,15 +60,15 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    * @todo it might be better to only use interval - keying by year was introduced
    * before year flexibility was introduced)
    */
-  protected $_years = array();
+  protected $_years = [];
 
-  protected $_charts = array(
-  );
+  protected $_charts = [
+  ];
 /**
  *
  * @var array statuses to show on the report
  */
-  protected $_statuses = array('increased', 'every');
+  protected $_statuses = ['increased', 'every'];
 
   /**
    *
@@ -76,84 +76,84 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    * aggregates are for calculating $ amount rather than number of
    * people that fit the criteria
    */
-  protected $_aggregates = array('every');
+  protected $_aggregates = ['every'];
 
-  public $_drilldownReport = array('contribute/detail' => 'Link to Detail Report');
+  public $_drilldownReport = ['contribute/detail' => 'Link to Detail Report'];
 
   function __construct() {
-    $this->_kpiSpecs = array(
-      'donor_number' => array(
+    $this->_kpiSpecs = [
+      'donor_number' => [
         'type' => CRM_Utils_Type::T_INT,
         'title' => ts('Total Number of Donors'),
         'contact_type_title' => ts('Total Number of %1 Donors'),
         'link_status' => 'every',
-      ),
-      'total_amount' => array(
+      ],
+      'total_amount' => [
         'type' => CRM_Utils_Type::T_MONEY,
         'title' => ts('Amount Raised'),
         'contact_type_title' => ts('Amount Raised From %1s'),
         'link_status' => 'every',
-      ),
-      'average_donation' => array(
+      ],
+      'average_donation' => [
         'type' => CRM_Utils_Type::T_MONEY,
         'title' => ts('Average Donation'),
         'contact_type_title' => ts('Average Donation From %1s'),
         'link_status' => 'every',
-      ),
-      'no_increased_donations' => array(
+      ],
+      'no_increased_donations' => [
         'type' => CRM_Utils_Type::T_INT,
         'title' => ts('Donors who Increased their donation'),
         'contact_type_title' => ts('%1 Donors who Increased their donation'),
         'link_status' => 'increased',
-      ),
-      'current_pledge_count' => array(
+      ],
+      'current_pledge_count' => [
          'type' => CRM_Utils_Type::T_INT,
          'title' => ts('Active Pledges'),
          'contact_type_title' => ts('%1 Donors with active pledges'),
          'link_status' => NULL,
-       ),
-      'current_recur_count' => array(
+       ],
+      'current_recur_count' => [
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Active Recurring Contributions'),
           'contact_type_title' => ts('%1 Donors with active recurring contributions'),
           'link_status' => NULL,
-        ),
-      'current_sustainer_count' => array(
+        ],
+      'current_sustainer_count' => [
         'type' => CRM_Utils_Type::T_INT,
         'title' => ts('Sustaining Members'),
         'contact_type_title' => ts('%1 Sustaining  Members'),
         'link_status' => NULL,
-      ),
-      'highest_donation' => array(
+      ],
+      'highest_donation' => [
         'type' => CRM_Utils_Type::T_MONEY,
         'title' => ts('Largest Donation'),
         'contact_type_title' => ts('Largest Donation From %1s'),
         'link_status' => 'every',
-      ),
-      'lowest_donation' => array(
+      ],
+      'lowest_donation' => [
         'type' => CRM_Utils_Type::T_MONEY,
         'title' => ts('Smallest Donation'),
         'contact_type_title' => ts('Smallest Donation From %1s'),
         'link_status' => 'every',
-      ),
-    );
-    $extraDefault = array();
+      ],
+    ];
+    $extraDefault = [];
     $this->setFinancialType();
     if($this->financialTypeField == 'financial_type_id'){
       // we are dealing with a 4.3 + install so we will also get contact created data
-      $this->_kpiSpecs['contact_count'] = array(
+      $this->_kpiSpecs['contact_count'] = [
         'type' => CRM_Utils_Type::T_INT,
         'title' => ts('New Contacts in Database Matching Giving Criteria'),
         'contact_type_title' => ts('New %1s in Database Matching Giving Criteria'),
         'link_status' => NULL,
-        );
-      $this->_kpiSpecs['contact_count_all'] = array(
+        ];
+      $this->_kpiSpecs['contact_count_all'] = [
         'type' => CRM_Utils_Type::T_INT,
         'title' => ts('All New Contacts in Database'),
         'contact_type_title' => ts('New %1s in Database'),
         'link_status' => NULL,
-      );
-      $extraDefault = array('contact_count_all');
+      ];
+      $extraDefault = ['contact_count_all'];
     }
     foreach ($this->_kpiSpecs as $specKey => $specs){
       $contactTypes =  $this->getContactTypeOptions();
@@ -161,48 +161,48 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       foreach ($contactTypes as $contactType => $contactTypeName){
         $this->_kpiDescriptors[$specKey . '__' . strtolower($contactType)] =
           ts( $specs['contact_type_title'],
-              array($contactType, 'String')
+              [$contactType, 'String']
           );
       }
     }
-    $defaultFilters = array (
+    $defaultFilters = [
       'donor_number',
       'total_amount',
       'total_amount__individual',
       'average_donation__individual',
       'no_increased_donations__individual',
       'current_sustainer_count',
-    );
+    ];
     if($extraDefault) {
       $defaultFilters += $extraDefault;
     }
-     $this->_columns =  array('pseudotable' => array(
+     $this->_columns =  ['pseudotable' => [
         'name' => 'civicrm_report_instance',
-         'filters' => array(
-           'report_options' => array(
+         'filters' => [
+           'report_options' => [
              'pseudofield' => TRUE,
              'operatorType' => CRM_Report_Form::OP_MULTISELECT,
              'options' => $this->_kpiDescriptors,
              'title' => ts('Selected Performance Indicators'),
              'default' => $defaultFilters
-             ),
-           )
-       ))
-       + $this->getContributionColumns(array(
+             ],
+           ]
+       ]]
+       + $this->getContributionColumns([
        'fields' => FALSE,
        'order_by' => FALSE,
-     ));
+     ]);
    //  unset($this->_columns['civicrm_contribution']['filters']['receive_date']);
-     $this->_columns['civicrm_contribution']['filters']['receive_date']['default'] = array(
+     $this->_columns['civicrm_contribution']['filters']['receive_date']['default'] = [
        'from' => date('m/d/Y', strtotime('first day of January this year')),
        'to' => date('m/d/Y')
-     );
+     ];
      $this->_columns['civicrm_contribution']['filters']['receive_date']['title'] = 'Report Main Date Range';
      $this->_columns['civicrm_contribution']['filters']['receive_date']['pseudofield'] = TRUE;
      $this->_aliases['civicrm_contact']  = 'civicrm_report_contact';
 
      $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['default']
-     = array(array_search('Completed', $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['options']));
+     = [array_search('Completed', $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['options'])];
 
      $this->_tagFilter = TRUE;
      $this->_groupFilter = TRUE;
@@ -218,11 +218,11 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    * @see CRM_Extendedreport_Form_Report_Advancedfundraising::getAvailableJoins()
    */
   function getAvailableJoins() {
-    return parent::getAvailableJoins() + array(
-      'compile_key_stats' => array(
+    return parent::getAvailableJoins() + [
+      'compile_key_stats' => [
         'callback' => 'compileKeyStats'
-      ),
-    );
+      ],
+    ];
   }
 
   function from(){
@@ -250,15 +250,15 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     $this->_currentYear = date('Y', strtotime($this->_params['receive_date_from']));
     $this->_lastYear = $this->_currentYear - 1;
     $this->_yearBeforeLast = $this->_currentYear - 2;
-    $this->_years = array(
+    $this->_years = [
       0 => $this->_currentYear,
       1 => $this->_lastYear,
-    );
+    ];
     // receive date from & to get unset in parent class. I'm a bit scared to change that right
     // now so will hack around it by stashing them for a bit
     $this->_params['receive_date_from_stash']  = $this->_params['receive_date_from'];
     $this->_params['receive_date_to_stash']  = $this->_params['receive_date_to'];
-    $this->constructRanges(array(
+    $this->constructRanges([
       'primary_from_date' => 'receive_date_from',
       'primary_to_date' => 'receive_date_to',
       'offset_unit' => 'year',
@@ -266,8 +266,8 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       'comparison_offset' => '1',
       'comparison_offset_unit' => 'year',
       'no_periods' => 2,
-      'statuses' => array('increased'),
-    )
+      'statuses' => ['increased'],
+    ]
     );
 
   }
@@ -329,9 +329,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       return $this->constrainedFromClause();
     }
     else{
-      return array(
+      return [
         'contribution_from_contact',
-      );
+      ];
     }
   }
   /**
@@ -339,13 +339,13 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    * @return
    */
   function constrainedFromClause(){
-    return array(
-      'timebased_contribution_from_contact' => array('',
-        array('extra_fields' => array('contact_type' => 'contact_type VARCHAR(50) NULL,')
-        )
-      ),
-      'compile_key_stats' => array(array()),
-    );
+    return [
+      'timebased_contribution_from_contact' => ['',
+        ['extra_fields' => ['contact_type' => 'contact_type VARCHAR(50) NULL,']
+        ]
+      ],
+      'compile_key_stats' => [[]],
+    ];
   }
 
   function select(){
@@ -357,15 +357,15 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
       if(strtotime($this->_params['receive_date_from']) >= strtotime('last day of december last year')){
         $thisYear = TRUE;
       }
-      $columns = array(
+      $columns = [
         'description' => '',
         'this_year' => $thisYear ? ts('This Year') : ts('Main Date Range'),
         'percent_change' => ts('Percent Change'),
         'last_year' => $thisYear ? ts ('Last Year') : ts('One year Prior Range'),
-      );
+      ];
       foreach ($columns as $column => $title){
         $select[]= " $column ";
-        $this->_columnHeaders[$column] = array('title' => $title);
+        $this->_columnHeaders[$column] = ['title' => $title];
       }
       $this->_select = " SELECT " . implode(', ', $select);
     }
@@ -472,10 +472,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
    * Calculate largest & smallest donations
    */
   function calcContactTypeDonationMaxMin(){
-    $years = array(
+    $years = [
         0 => '_currentYear',
         1 => '_lastYear',
-      );
+      ];
     foreach($years as $interval => $year){
       $sql = "
       SELECT
@@ -507,7 +507,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
     if(!empty($contactType)){
       $contactType = '__' . $contactType;
     }
-    $years = array($this->_currentYear, $this->_lastYear);
+    $years = [$this->_currentYear, $this->_lastYear];
     foreach($years as $year){
       if(empty($this->_kpis[$year]['donor_number' . $contactType])){
         $this->_kpis[$year]['average_donation' . $contactType] = 0;
@@ -804,10 +804,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_KeyNumbers extends CRM_Adva
         $contactType = $contactTypes[$lcKey];
         $queryURL .= "&contact_type_value=" . $contactType . "&contact_type_op=in";
       }
-      $years = array(
+      $years = [
         0 => 'this_year',
         1 => 'last_year',
-      );
+      ];
       foreach($years as $interval => $year){
         $queryURLYear ="&comparison_date_from=". date('YmdHis', strtotime($this->_ranges['interval_' . $interval]['comparison_from_date']))
         . "&comparison_date_to=". date('YmdHis', strtotime($this->_ranges['interval_' . $interval]['comparison_to_date']))

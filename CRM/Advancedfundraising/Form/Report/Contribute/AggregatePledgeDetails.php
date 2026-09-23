@@ -41,38 +41,38 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
   protected $_preConstrain = TRUE;
   protected $_add2groupSupported = TRUE;
 
-  protected $_charts = array(
+  protected $_charts = [
     '' => 'Tabular',
-  );
+  ];
 
-  public $_drilldownReport = array('contribute/detail' => 'Link to Detail Report');
+  public $_drilldownReport = ['contribute/detail' => 'Link to Detail Report'];
 
   function __construct() {
-    $this->reportFilters = array(
-      'civicrm_contribution' => array(
-        'filters' => array(
-          'receive_date' => array(),// just to make it first
-          'comparison_date' => array(
+    $this->reportFilters = [
+      'civicrm_contribution' => [
+        'filters' => [
+          'receive_date' => [],// just to make it first
+          'comparison_date' => [
             'title' => ts('Comparison Date Range'),
             'pseudofield' => TRUE,
             'type' => CRM_Report_Form::OP_DATE,
             'operatorType' => CRM_Report_Form::OP_DATE,
             'required' => TRUE,
-          ),
-          'report_date' => array(
+          ],
+          'report_date' => [
             'title' => ts('Report Date Range'),
             'pseudofield' => TRUE,
             'type' => CRM_Report_Form::OP_DATE,
             'operatorType' => CRM_Report_Form::OP_DATE,
             'required' => TRUE,
-          ),
-          'behaviour_type' => array(
+          ],
+          'behaviour_type' => [
             'title' => ts('Donor Behavior'),
             'pseudofield' => TRUE,
             'type' => CRM_Report_Form::OP_STRING,
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'required' => TRUE,
-            'options' => array(
+            'options' => [
               'renewed' => ts('Renewed Donors'),
               'new' => ts('New Donor (since comparison period'),
               'lapsed' => ts('Lapsed Donors from Comparison Period'),
@@ -82,24 +82,24 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
               'increased' => ts('Donors with increased giving'),
               'decreased' => ts('Donor with decreased giving'),
               'every' => ts('All donors in main period'),
-            ),
-          ),
-        )
-      ),
-    );
+            ],
+          ],
+        ]
+      ],
+    ];
 
-    $this->_columns = array_merge_recursive($this->reportFilters, $this->getContributionColumns(array(
+    $this->_columns = array_merge_recursive($this->reportFilters, $this->getContributionColumns([
         'fields' => FALSE,
         'order_by' => FALSE,
-      )))
+      ]))
     + $this->getContactColumns()
-    + $this->getContributionSummaryColumns(array('prefix' => 'main', 'prefix_label' => ts('Main Range ')))
-    + $this->getContributionSummaryColumns(array('prefix' => 'comparison', 'prefix_label' => ts('Comparison Range ')));
+    + $this->getContributionSummaryColumns(['prefix' => 'main', 'prefix_label' => ts('Main Range ')])
+    + $this->getContributionSummaryColumns(['prefix' => 'comparison', 'prefix_label' => ts('Comparison Range ')]);
     $this->_columns['civicrm_contact']['fields']['display_name']['default']  = TRUE;
     $this->_columns['civicrm_contact']['fields']['id']['default']  = TRUE;
     $this->_columns['civicrm_contribution']['filters']['receive_date']['pseudofield'] = TRUE;
     $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['default']
-    = array(array_search('Completed', $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['options']));
+    = [array_search('Completed', $this->_columns['civicrm_contribution']['filters'] ['contribution_status_id']['options'])];
 
     $this->_aliases['civicrm_contact']  = 'civicrm_report_contact';
     $this->_tagFilter = TRUE;
@@ -120,40 +120,40 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
       return $this->constrainedFromClause();
     }
     else{
-      return array(
+      return [
         'contribution_from_contact',
         'entitytag_from_contact',
         'single_contribution_comparison_from_contact',
-     ) ;
+     ] ;
     }
   }
 
   function constrainedFromClause(){
-    $criteria = array();
+    $criteria = [];
     foreach ($this->whereClauses['civicrm_contribution'] as $clause){
       if(strpos($clause, 'receive_date') == FALSE){
         $criteria[] = $clause;
       }
     }
-    return array(
+    return [
       'single_contribution_comparison_from_contact',
-      'contribution_summary_table_from_contact' => array(
-        'comparison' => array(
-            'criteria' => array_merge($criteria,array(
+      'contribution_summary_table_from_contact' => [
+        'comparison' => [
+            'criteria' => array_merge($criteria,[
               'receive_date BETWEEN '  . date('Ymd000000', strtotime($this->_ranges['interval_0']['comparison_from_date'] ))
               . ' AND ' . date('Ymd235959', strtotime($this->_ranges['interval_0']['comparison_to_date'])),
               'is_test = 0',
-            ))
-          ),
-        'main' => array(
-          'criteria' => array_merge($criteria, array(
+            ])
+          ],
+        'main' => [
+          'criteria' => array_merge($criteria, [
             'receive_date BETWEEN '  . date('Ymd000000', strtotime($this->_ranges['interval_0']['from_date'] ))
             . ' AND ' . date('Ymd235959', strtotime($this->_ranges['interval_0']['to_date'])),
             'is_test = 0',
-          ))
-        ),
-        ),
-    );
+          ])
+        ],
+        ],
+    ];
   }
 
   function groupBy() {
@@ -164,10 +164,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
 
   function beginPostProcess() {
     parent::beginPostProcess();
-    $this->_ranges = array(
-      'interval_0' => array()
-    );
-    $dateFields = array('receive_date' => '', 'comparison_date' => 'comparison_', 'report_date' => 'report_date');
+    $this->_ranges = [
+      'interval_0' => []
+    ];
+    $dateFields = ['receive_date' => '', 'comparison_date' => 'comparison_', 'report_date' => 'report_date'];
     $earliestDate = date('Y-m-d');
     $latestDate = date('Y-m-d', strtotime('50 years ago'));
     foreach ($dateFields as $fieldName => $prefix){
@@ -196,7 +196,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_AggregatePledgeDetails exte
     $this->_columns['civicrm_contribution']['filters']['report_date'] = $this->_columns['civicrm_contribution']['filters']['receive_date'];
     $this->_columns['civicrm_contribution']['filters']['report_date']['title'] = 'Report Date Range';
     $this->_columns['civicrm_contribution']['filters']['report_date']['pseudofield'] = FALSE;
-    $this->_statuses = array($this->_params['behaviour_type_value']);
+    $this->_statuses = [$this->_params['behaviour_type_value']];
   }
 
 

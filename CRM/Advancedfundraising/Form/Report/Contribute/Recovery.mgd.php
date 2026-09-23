@@ -36,19 +36,19 @@
 // The record will be automatically inserted, updated, or deleted from the
 // database as appropriate. For more details, see "hook_civicrm_managed" at:
 // http://wiki.civicrm.org/confluence/display/CRMDOC42/Hook+Reference
-return array (
+return [
   0 =>
-  array (
+  [
     'name' => 'Lapsed and Recovered Contributors Report',
     'entity' => 'ReportTemplate',
     'params' =>
-    array (
+    [
       'version' => 3,
       'label' => 'PowerBase Contributor Recovery Report',
       'description' => 'PowerBase Report displays how many contributors have lapsed and been recovered',
       'class_name' => 'CRM_Advancedfundraising_Form_Report_Contribute_Recovery',
       'report_url' => 'contribute/recovery',
       'component' => 'CiviContribute',
-    ),
-  ),
-);
+    ],
+  ],
+];

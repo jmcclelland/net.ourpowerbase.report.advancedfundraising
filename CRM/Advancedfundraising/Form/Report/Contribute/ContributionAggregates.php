@@ -67,19 +67,19 @@
 class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates extends CRM_Advancedfundraising_Form_Report_ReportBase {
   CONST OP_SINGLEDATE = 3;
   protected $_add2groupSupported = FALSE;
-  protected $_ranges = array();
+  protected $_ranges = [];
   protected $_reportingStartDate = NULL;
   protected $_comparisonType = 'future'; // is the comparison period future, a priorrange, or all prior (after the reporting range starts)
   protected $_barChartLegend = NULL;
   protected $_baseEntity = NULL;
-  protected $_tempTables = array();
-  protected $_graphData = array();
-  protected $_cleanUpTables = array();
+  protected $_tempTables = [];
+  protected $_graphData = [];
+  protected $_cleanUpTables = [];
   /**
    * These are the labels for the available statuses.
    * Reports can over-ride them
    */
-  protected $_statusLabels = array(
+  protected $_statusLabels = [
     'renewed' => 'Renewed',
     'lapsed' => 'Lapsed',
     'prior' => 'All lapsed',
@@ -89,25 +89,25 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     'increased' => 'Donors who have increased their giving',
     'reduced' => 'Donors who have reduced their giving',
     'every' => 'All donors',
-    );
+    ];
   /**
    *
    * @var array statuses to include in report
    */
-  protected $_statuses = array();
+  protected $_statuses = [];
   /**
    *
    * @var array aggregates to calculate for the report
    * aggregates are for calculating $ amount rather than number of
    * people that fit the criteria
    */
-  protected $_aggregates = array();
+  protected $_aggregates = [];
   /**
    * This is here as a way to determine what to potentially put in the url links as filters
    * There is probably a better way...
    * @var unknown_type
    */
-  protected $_potentialCriteria = array(
+  protected $_potentialCriteria = [
     'financial_type_id_value',
     'financial_type_id_op',
     'contribution_type_id_value',
@@ -128,7 +128,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     'gid_value',
     'contact_type_value',
     'contact_type_op',
-  );
+  ];
 
   function __destruct() {
     // Clean up any temporary tables.
@@ -144,7 +144,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
   protected $tagPercent = NULL;
 
   function buildChart(&$rows) {
-    $graphData = array();
+    $graphData = [];
     foreach ($this->_statuses as $status){
       $graphData['labels'][]  = $this->_statusLabels[$status];
     }
@@ -155,7 +155,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     foreach ($rows as $index => $row) {
       $graphData['xlabels'][] = $this->_params['contribution_baseline_interval_value'] . ts(" months to ") . $row['to_date'];
       $graphData['end_date'][] = $row['to_date'];
-      $statusValues = array();
+      $statusValues = [];
       foreach ($this->_statuses as $status){
         $statusValues[] = (int) $row[$status];
       }
@@ -197,13 +197,13 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
      $graphData['xname'] = 'x';
      $config = CRM_Core_Config::Singleton();
      $graphData['yname'] = "Renewals : ";
-     $chartInfo = array('legend' => $this->_barChartLegend);
+     $chartInfo = ['legend' => $this->_barChartLegend];
      $chartInfo['xname'] = ts('Base contribution period');
      $chartInfo['yname'] = ts("Number of Donors");
      $chartData = CRM_Utils_OpenFlashChart::reportChart( $graphData, 'pieChart', $this->_statuses, $chartInfo);
      $this->assign('chartType', 'pieChart');
      $this->assign('chartsData', $graphData['values']);
-     $this->assign('chartsLabels', array('status', 'no. contacts'));
+     $this->assign('chartsLabels', ['status', 'no. contacts']);
      $this->assign('chartInfo', $chartInfo);
   }
   function alterDisplay(&$rows) {
@@ -263,7 +263,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
    *  - 'start_offset_unit' => 'month'
    */
   function constructRanges($extra) {
-    $vars = array(
+    $vars = [
       'cutoff_date',
       'no_periods',
       'offset_unit',
@@ -274,7 +274,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       'start_offset_unit',
       'primary_from_date',
       'primary_to_date'
-    );
+    ];
     foreach ($vars as $var) {
       if (isset($extra[$var]) && ! empty($this->_params[$extra[$var]])) {
         $$var = $this->_params[$extra[$var]];
@@ -292,7 +292,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       // start of our period is the cutoff date - the sum of all our periods + one day (as ranges expected to run 01 Jan to 31 Dec etc)
       $startDate = date('Y-m-d', strtotime("- " . ($no_periods * $offset) . " $offset_unit ", strtotime('+ 1 day', strtotime($cutoff_date))));
     }
-    $this->_ranges = array();
+    $this->_ranges = [];
     for($i = 0; $i < $no_periods; $i ++) {
       if ($this->_comparisonType == 'future') {
         $this->constructFutureRanges($i, $startDate, $no_periods, $offset_unit, $offset, $comparison_offset, $comparison_offset_unit, $start_offset, $start_offset_unit);
@@ -327,12 +327,12 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     $rangeEnd = date('Y-m-d', strtotime(" +  $offset  $offset_unit", strtotime('- 1 day', strtotime($rangestart))));
     $rangeComparisonStart = date('Y-m-d', strtotime(' + 1 day', strtotime($rangeEnd)));
     $rangeComparisonEnd = date('Y-m-d', strtotime(" + $comparison_offset $comparison_offset_unit", strtotime('- 1 day', strtotime($rangeComparisonStart))));
-    $this->_ranges['interval_' . $i] = array(
+    $this->_ranges['interval_' . $i] = [
       'from_date' => $rangestart,
       'to_date' => $rangeEnd,
       'comparison_from_date' => $rangeComparisonStart,
       'comparison_to_date' => $rangeComparisonEnd
-    );
+    ];
   }
 
   /**
@@ -354,12 +354,12 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       $rangeComparisonStart = $this->_reportingStartDate;
     }
 
-    $this->_ranges['interval_' . $i] = array(
+    $this->_ranges['interval_' . $i] = [
       'from_date' => $rangestart,
       'to_date' => $rangeEnd,
       'comparison_from_date' => $rangeComparisonStart,
       'comparison_to_date' => $rangeComparisonEnd
-    );
+    ];
   }
   /**
    * Here we are constructing a set of Year to Date ranges
@@ -381,12 +381,12 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     // in this case we will assume it is offset from the main range end by the comparison offset
     $rangeComparisonEnd = date('Y-m-d', strtotime('- ' . ($comparison_offset) . " $comparison_offset_unit ", strtotime($rangeEnd)));
     $rangeComparisonStart = date('Y-m-d', strtotime('- ' . ($comparison_offset) . " $comparison_offset_unit ", strtotime($rangeStart)));
-    $this->_ranges['interval_' . $i] = array(
+    $this->_ranges['interval_' . $i] = [
       'from_date' => $rangeStart,
       'to_date' => $rangeEnd,
       'comparison_from_date' => $rangeComparisonStart,
       'comparison_to_date' => $rangeComparisonEnd
-    );
+    ];
   }
   /**
    *
@@ -404,10 +404,10 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
     if ($this->_reportingStartDate && $this->_comparisonType == 'allprior') {
       $rangeComparisonStart = $this->_reportingStartDate;
     }
-    $this->_ranges['interval_' . $i] = array(
+    $this->_ranges['interval_' . $i] = [
       'from_date' => $rangestart,
       'to_date' => $rangeEnd
-    );
+    ];
   }
 
   /*
@@ -475,7 +475,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       $this->_from = " FROM {$tempTable}_summary";
 
     }
-    $this->whereClauses = array();
+    $this->whereClauses = [];
   }
   /**
  * Set the report date range where the report dates are defined by an end date and
@@ -546,9 +546,9 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
           '{$this->_ranges['interval_0']['to_date']}'";
     }
     $this->_from = str_replace('FROM' . $baseFrom, $baseClause, $this->_from);
-    $this->constrainedWhereClauses = array(
+    $this->constrainedWhereClauses = [
       "tmpConttable.interval_0_{$this->_params['behaviour_type_value']} = 1"
-    );
+    ];
   }
 
 
@@ -584,7 +584,7 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
       return $tempTable;
     }
     $columnStr = '';
-    $betweenClauses = array();
+    $betweenClauses = [];
     foreach ($this->_ranges as $alias => &$specs) {
 
       $specs['between'] = "
@@ -885,14 +885,14 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
    * @see CRM_Extendedreport_Form_Report_Advancedfundraising::getAvailableJoins()
    */
   function getAvailableJoins() {
-    return parent::getAvailableJoins() + array(
-      'timebased_contribution_from_contact' => array(
+    return parent::getAvailableJoins() + [
+      'timebased_contribution_from_contact' => [
         'callback' => 'joinContributionMulitplePeriods'
-      ),
-      'single_contribution_comparison_from_contact' => array(
+      ],
+      'single_contribution_comparison_from_contact' => [
         'callback' => 'joinContributionSinglePeriod'
-      )
-    );
+      ]
+    ];
   }
   /**
    * We have some overloaded vars which could either be a constant of a param - convert
@@ -959,36 +959,36 @@ class CRM_Advancedfundraising_Form_Report_Contribute_ContributionAggregates exte
         $rangeStr = CRM_Utils_Date::customFormat($this->_ranges[$index]['from_date']) . ts(' to ') .  CRM_Utils_Date::customFormat($this->_ranges[$index]['to_date']);
 
         if($isMultipleRanges) {
-          $statistics['counts']['header'. $index] = array(
+          $statistics['counts']['header'. $index] = [
             'title' => $rangeStr,
             'value' => '',
             'type' => CRM_Utils_Type::T_MONEY,
-          );
+          ];
         }
-        $statistics['counts']['amount'. $index] = array(
+        $statistics['counts']['amount'. $index] = [
           'title' => $spacing . ts('Total Amount Contributed '),
           'value' => $dao->$amountStr,
           'type' => CRM_Utils_Type::T_MONEY,
-        );
-        $statistics['counts']['count'. $index] = array(
+        ];
+        $statistics['counts']['count'. $index] = [
           'title' => $spacing . ts('Total Number of Contributions'),
           'value' => $dao->$noStr,
-        );
-        $statistics['counts']['avg' . $index] = array(
+        ];
+        $statistics['counts']['avg' . $index] = [
           'title' => $spacing . ts('Average Value of Contribution'),
           'value' => $dao->$avgStr,
           'type' => CRM_Utils_Type::T_MONEY,
-        );
-        $statistics['counts']['max' . $index] = array(
+        ];
+        $statistics['counts']['max' . $index] = [
           'title' => $spacing . ts('Largest Contribution'),
           'value' =>  $dao->$maxStr,
           'type' => CRM_Utils_Type::T_MONEY,
-        );
-        $statistics['counts']['min' . $index] = array(
+        ];
+        $statistics['counts']['min' . $index] = [
           'title' => $spacing . ts('Smallest Contribution'),
           'value' =>  $dao->$minStr,
           'type' => CRM_Utils_Type::T_MONEY,
-        );
+        ];
       }
 
     }
