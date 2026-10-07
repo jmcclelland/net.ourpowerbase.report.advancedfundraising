@@ -2012,7 +2012,6 @@ WHERE cg.extends IN ('" . implode("','", $extends) . "') AND
 
 
   function getMembershipTypeColumns() {
-    require_once 'CRM/Member/PseudoConstant.php';
     return [
       'civicrm_membership_type' => [
         'dao' => 'CRM_Member_DAO_MembershipType',
